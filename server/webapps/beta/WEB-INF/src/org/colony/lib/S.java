@@ -44,4 +44,9 @@ public class S
 	{
 		return ContextListener.getService();
 	}
+	
+	public static Service s()
+	{
+		return ContextListener.getService();
+	}
 }

@@ -15,9 +15,12 @@ import javax.servlet.http.HttpSession;
 import org.colony.data.Einfluss;
 import org.colony.data.Flotte;
 import org.colony.data.Gebaeude;
+import org.colony.data.Geschwader;
 import org.colony.data.Modell;
 import org.colony.data.Nutzer;
+import org.colony.data.Position;
 import org.colony.data.Produkt;
+import org.colony.data.Schiffsmodell;
 import org.colony.data.Sektor;
 import org.colony.data.Typ;
 
@@ -28,6 +31,7 @@ public class Service
 	Map<Integer,Typ> typen = new HashMap<Integer, Typ>();
 	Map<Integer,Modell> modelle = new HashMap<Integer, Modell>();
 	List<Modell> modellListe = new ArrayList<Modell>();
+	Map<Integer,Schiffsmodell> schiffsmodelle = new HashMap<Integer, Schiffsmodell>();
 	Map<Integer,Sektor> sektoren = new HashMap<Integer, Sektor>();
 	private Map<Integer,Nutzer> nutzer = new HashMap<Integer, Nutzer>();
 	public boolean debug = false;
@@ -39,43 +43,83 @@ public class Service
 		Connection c = DbEngine.getConnection();
 		try
 		{
-//			for(Sektor s : getSektoren().values())
+			Statement statement;
+			//------------------------- Flotten bewegen --------------------------
+			List<Flotte> sprungFlotten = getSprungFlotten(c);
+			for(Flotte f: sprungFlotten)
 			{
-				Sektor s = getSektor(1);
-				List<Gebaeude> relGebs = getRelevanteGebaeude(s);
-				List<Gebaeude> sektorGebs = getGebaeude(s);
-//				int wohnraum=0;
-//				for(Gebaeude g : sektorGebs)
-//				{
-//					if(g.getModell().getTyp().getId()==3) wohnraum+=g.getModell().getKapazitaet();
-//				}
-//				updateSektorBewohner(c, s, wohnraum);
-//				float mietAuslastung = ((float)s.getBewohner()) / ((float)wohnraum);
-//				if(mietAuslastung>1) mietAuslastung=1;
-				if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-				//Gebäude updaten
-				for(Gebaeude g : sektorGebs)
+				f.setPosition(f.getSprungziel());
+				if( f.getX()==f.getZielX() && f.getY()==f.getZielY())
 				{
-					g.setAlter(g.getAlter()+1);
-					if(g.getAlter()<0)
-					{
-						g.setAusgaben(0);
-						g.setAuslastung(0);
-						g.setEffizienz(0);
-						g.setEinnahmen(0);
-					}
-					else
-					{
-						g.setEffizienz(getEffizienz(g, relGebs));
-						g.setAuslastung(getAuslastung(g));
-						g.setEinnahmen(getEinnahmen(g));
-						g.setAusgaben(getAusgaben(g));
-					}
+					f.setSprungAufladung(-1);
 				}
-				if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-				updateGebaeude(c, sektorGebs);
+				else
+				{
+					Position sprungZiel = f.getSprungziel();
+					int sprungzeit = 0;
+					for(Geschwader g : getGeschwader(f, c))
+					{
+						if(g.getSchiffsmodell().getSprungzeit() > sprungzeit)
+							sprungzeit=g.getSchiffsmodell().getSprungzeit();
+					}
+//					f.setSprungAufladung( (int) Math.round(sprungzeit * Math.hypot( f.getX()-sprungZiel.getX(), f.getY()-sprungZiel.getY() )  ));
+					f.setSprungAufladung( (int) sprungzeit);
+					f.setSprungzeit(f.getSprungAufladung());
+				}
 			}
-			updateAllNutzerFinanzen(c);
+			statement = c.createStatement();
+			for(Flotte f: sprungFlotten)
+			{
+				StringBuffer sb = new StringBuffer("update flotte set sprungAufladung = ");
+				sb.append(f.getSprungAufladung());
+				sb.append(", x=");
+				sb.append(f.getX());
+				sb.append(", y=");
+				sb.append(f.getY());
+				sb.append(" where id=");
+				sb.append(f.getId());
+				statement.addBatch(sb.toString());
+			}
+		    statement.executeBatch();
+		    statement.close();
+
+			
+
+			//------------------------- Gebäude updaten --------------------------
+			Sektor s = getSektor(1);
+			List<Gebaeude> relGebs = getRelevanteGebaeude(s);
+			List<Gebaeude> sektorGebs = getGebaeude(s);
+			if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
+			for(Gebaeude g : sektorGebs)
+			{
+				g.setAlter(g.getAlter()+1);
+				if(g.getAlter()<0)
+				{
+					g.setAusgaben(0);
+					g.setAuslastung(0);
+					g.setEffizienz(0);
+					g.setEinnahmen(0);
+				}
+				else
+				{
+					g.setEffizienz(getEffizienz(g, relGebs));
+					g.setAuslastung(getAuslastung(g));
+					g.setEinnahmen(getEinnahmen(g));
+					g.setAusgaben(getAusgaben(g));
+				}
+			}
+			if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
+			updateGebaeude(c, sektorGebs);
+
+			
+			//------------------------- Globale updates --------------------------
+			statement = c.createStatement();
+		    statement.addBatch("update flotte set sprungAufladung = sprungAufladung - 1 where sprungAufladung >= 0;");
+		    statement.addBatch("update nutzer set einnahmen = COALESCE((SELECT sum(gebaeude.einnahmen)-sum(gebaeude.ausgaben)+50 FROM gebaeude where besitzerNutzerId = nutzer.id),0 )");
+		    statement.addBatch("update nutzer set kontostand = kontostand+einnahmen");
+		    statement.executeBatch();
+		    statement.close();
+			loadNutzer(c);
 			c.commit();
 		}
 		catch(Exception ex)
@@ -169,6 +213,10 @@ public class Service
 	{
 		return modelle.get(id);
 	}
+	public Schiffsmodell getSchiffsmodell(int id)
+	{
+		return schiffsmodelle.get(id);
+	}
 	public Sektor getSektor(int id)
 	{
 		return sektoren.get(id);
@@ -211,15 +259,6 @@ public class Service
 			ps.close();
 		}
 	}
-	public void updateAllNutzerFinanzen(Connection c) throws SQLException
-	{
-	    Statement statement = c.createStatement();
-	    statement.addBatch("update nutzer set einnahmen = COALESCE((SELECT sum(gebaeude.einnahmen)-sum(gebaeude.ausgaben)+50 FROM gebaeude where besitzerNutzerId = nutzer.id),0 )");
-	    statement.addBatch("update nutzer set kontostand = kontostand+einnahmen");
-	    statement.executeBatch();
-	    statement.close();
-		loadNutzer(c);
-	}
 
 
 	public List<Flotte> getFlotten(int x, int y) throws Exception
@@ -231,6 +270,7 @@ public class Service
 		}
 		finally { c.close(); }
 	}
+	
 	public List<Flotte> getFlotten(int x, int y, Connection c) throws Exception
 	{
 		List<Flotte> results = new ArrayList<Flotte>();
@@ -258,17 +298,50 @@ public class Service
 
 		rs = ps.executeQuery();
 		while(rs != null && rs.next())
+			results.add(new Flotte(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+	
+	
+	
+	/**
+	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
+	 */
+	public List<Geschwader> getGeschwader(Flotte f) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
 		{
-			Flotte f = new Flotte();
-			f.setId(rs.getInt("id"));
-			f.setBesitzerNutzerId(rs.getInt("besitzerNutzerId"));
-			f.setZielX(rs.getInt("zielX"));
-			f.setZielX(rs.getInt("zielY"));
-			f.setX(rs.getInt("x"));
-			f.setY(rs.getInt("y"));
-			f.setSprungAufladung(rs.getInt("sprungAufladung"));
-			results.add(f);
+			return getGeschwader(f, c);
 		}
+		finally { c.close(); }
+	}
+	
+	/**
+	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
+	 */
+	public List<Geschwader> getGeschwader(Flotte f, Connection c) throws Exception
+	{
+		List<Geschwader> results = new ArrayList<Geschwader>();
+		PreparedStatement ps = c.prepareStatement("	SELECT * from Geschwader");
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Geschwader(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+
+	/**
+	 * Liefert die Flotten welche gerade im Begriff sind zu "springen".
+	 */
+	public List<Flotte> getSprungFlotten(Connection c) throws Exception
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("	SELECT   id,  besitzerNutzerId, zielX,  zielY, x, y, sprungAufladung from flotte where sprungAufladung = 0 and zielX is not null");
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
 		if(rs!=null) rs.close();
 		ps.close();
 		return results;
@@ -429,9 +502,21 @@ public class Service
 		return g;
 	}
 	
-	
-	
-	
+	synchronized private void loadSchiffsmodelle(Connection c) throws SQLException
+	{
+		schiffsmodelle = new HashMap<Integer, Schiffsmodell>();
+		PreparedStatement ps;
+		ResultSet rs;
+		ps = c.prepareStatement("select * from schiffsmodell");
+		rs = ps.executeQuery();
+		while (rs != null && rs.next())
+		{
+			Schiffsmodell p = new Schiffsmodell(rs);
+			schiffsmodelle.put(p.getId(),p);
+		}
+		rs.close();
+		ps.close();
+	}
 	
 	synchronized private void loadModelle(Connection c) throws SQLException
 	{
@@ -600,6 +685,7 @@ public class Service
 			rs.close();
 			ps.close();
 			loadModelle(c);
+			loadSchiffsmodelle(c);
 
 		}
 		finally
