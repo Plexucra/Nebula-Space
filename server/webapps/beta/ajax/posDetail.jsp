@@ -73,6 +73,31 @@
 // 				$(tDialog).dialog({ width: 1200, height: 600, modal: true, buttons: {  "Schließen": function() { $( this ).dialog( "close" ); } } });
 // 			});
 	--%>
+	
+			$(".${ns} .cn_aktionsleiste").hide();
+			$(".${ns}_flottenliste").buttonset();
+			$(".${ns}_flottenliste input").button({ icons: { primary: "ui-icon-check" }, text: false }).click(function() 
+			{
+				var count = 0;
+				$(".${ns}_flottenliste input").each(function()
+				{
+					if($(this).prop('checked')) count++;
+				});
+				
+				if(count==0)
+				{
+					$(".${ns} .cn_aktionsleiste").hide();
+				}
+				else
+				{
+					$(".${ns} .cn_aktionsleiste").fadeIn();
+					if(count!=1) $(".${ns} .cn_aktionsleiste a.dn_teilen").button( "option", "disabled", true );
+					if(count < 2) $(".${ns} .cn_aktionsleiste a.dn_vereinen").button( "option", "disabled", true );
+				}
+// 				alert(count);
+
+// 				if(  $(this).prop('checked')   )
+			});
 		});
 	</script>
 <div>
@@ -80,20 +105,35 @@
 	<div>
 		<span class="cn_label">Position:</span>
 		<span class="cn_value">${param['x']}:${param['y']}</span>
-		<table>
-			<tr>
-				<th>Besitzer</th>
-				<th>Ziel</th>
-				<th><span title="Sprung erfolgt in .. Ticks">S</span></th>
-			</tr>
-			<c:forEach items="${ flotten }" var="row">
+
+		<div class="cn_aktionsleiste">
+			<span class="cn_label">Optionen für Auswahl:</span>
+			<a class="dn_senden" href="modell-auswahl.jsp" title="Die ausgewählten Flotten versenden..">Flotte(n) versenden</a>
+			<a class="dn_teilen" href="modell-auswahl.jsp" title="Die ausgewählte Flotte aufteilen / neue/weitere Flotte aus dieser abspalten..">Flotte aufteilen</a>
+			<a class="dn_vereinen" href="modell-auswahl.jsp" title="Die ausgewählten Flotten werden zu einer einzigen großen Flotte zusammengefügt">Flotten vereinen</a>
+		</div>
+
+		<div class="${ns}_flottenliste">
+			<table>
 				<tr>
-					<td>${row.besitzer.alias}</td>
-					<td>${row.zielX}:${row.zielY}</td>
-					<td>${row.sprungAufladung}</td>
+					<th></th>
+					<th>Besitzer</th>
+					<th>Ziel</th>
+					<th><span title="Sprung erfolgt in .. Ticks">S</span></th>
 				</tr>
-			</c:forEach>
-		</table>
+				<c:forEach items="${ flotten }" var="row">
+					<tr>
+						<td>
+							<input type="checkbox" value="${row.id}" id="flottenchecker${row.id}"/>
+							<label for="flottenchecker${row.id}">Diese Flotte für weitere Optionen auswählen..</label>
+						</td>
+						<td>${row.besitzer.alias}</td>
+						<td>${row.zielX}:${row.zielY}</td>
+						<td>${row.sprungAufladung}</td>
+					</tr>
+				</c:forEach>
+			</table>
+		</div>
 	</div>
 </div>
 <%@ include file="include/ajax-footer.jsp" %>

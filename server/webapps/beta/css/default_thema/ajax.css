@@ -1,0 +1,16 @@
+._ajax_posDetail_flottenliste td,
+._ajax_posDetail_flottenliste td
+{
+	padding-right:5px;
+	vertical-align: middle;
+}
+
+._ajax_posDetail .cn_aktionsleiste
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+._ajax_posDetail .cn_aktionsleiste a
+{
+	margin-top: 10px;
+}

@@ -48,6 +48,7 @@ public class Service
 			List<Flotte> sprungFlotten = getSprungFlotten(c);
 			for(Flotte f: sprungFlotten)
 			{
+				System.out.println(f.getId()+" x:"+f.getX()+" y:"+f.getY());
 				f.setPosition(f.getSprungziel());
 				if( f.getX()==f.getZielX() && f.getY()==f.getZielY())
 				{
