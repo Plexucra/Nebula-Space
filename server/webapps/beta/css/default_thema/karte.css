@@ -1,0 +1,45 @@
+
+._pages_karte #mainDiv
+{
+	padding:0px;
+}
+
+._pages_karte #mapBox
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+}
+._pages_karte canvas
+{
+	cursor:pointer;
+}
+
+._pages_karte .sidebar
+{
+	position:absolute;
+	right:-2px;
+	top:0px;
+	margin-left: 10px;
+/* 	background:  rgba(75, 75, 75, .6); */
+/* 	background:  #000; */
+/* 	border: 1px solid #ddd; */
+	padding:7px;
+	width:200px;
+}
+._pages_karte canvas
+{
+	border: 1px solid #ddd;
+	background-image: url("images/map-background.png");
+}
+._pages_karte .sidebar h3
+{
+	margin-bottom:1px;
+}
+._pages_karte .sidebar .cn_zusatz
+{
+	color:#ccc;
+	font-weight:lighter;
+	font-size: 80%;
+}

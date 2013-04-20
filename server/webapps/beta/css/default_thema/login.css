@@ -1,0 +1,25 @@
+
+/*---------------------------------------------- login.jsp  -----------------------------------------------------------*/
+
+._pages_login .dn_beispiel
+{
+	padding-top:15px;
+}
+._pages_login form
+{
+	padding-top:15px;
+}
+._pages_login #headDiv
+{
+	border: 1px solid #aaa;
+	padding:25px;
+	background: rgba(255, 255, 255, .1);
+	position: absolute;
+	width: 800px;
+	height: 100px;
+	top: 50px;
+	left: 50%;
+	margin-left: -400px;
+	background-image: url("images/header02.jpg");
+	background-repeat: no-repeat;
+}
