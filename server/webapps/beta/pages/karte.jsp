@@ -20,7 +20,6 @@
 		session.setAttribute("selModellId",Integer.parseInt(request.getParameter("selModellId")));
 		%>
 		selModellId="<%= request.getParameter("selModellId") %>";
-// 		alert("Zum Bauen eines Gebäudes auf Grundlage des gewählten Bauplanes wählen Sie nun bitte ein unbebautes Grundstück aus, welches direkt an ein bebautes angrenzt und klicken anschließend auf 'Gebäude hier errichten'.")
 		<%
 	}
 	%>
