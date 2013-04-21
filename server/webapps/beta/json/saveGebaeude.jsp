@@ -27,8 +27,8 @@
 	}
 	catch(Exception ex)
 	{
-		ex.printStackTrace();
-		out.print("{'success':false, 'errorMessage':'"+ex.getLocalizedMessage()+"'}");
+// 		ex.printStackTrace();
+		out.print("{\"success\":false, \"errorMessage\":\""+ex.getLocalizedMessage()+"\"}");
 	}
 
 %>

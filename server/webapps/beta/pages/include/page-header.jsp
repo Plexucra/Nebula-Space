@@ -1,3 +1,4 @@
+<%@page import="org.colony.lib.S"%>
 <%@page import="org.colony.lib.Formater"%>
 <%@page import="java.text.NumberFormat"%>
 <%@ include file="/pages/include/init.jsp" %>
@@ -5,6 +6,10 @@
 <%@ page pageEncoding="UTF-8"%><!doctype html>
 <html lang="de">
 <head>
+	<%
+		S s = new S(request);
+		request.setAttribute("s", s);
+	%>
 	<% request.setAttribute("ns", request.getServletPath().replaceAll("/", "_").replaceAll("\\.jsp", "")); %>
 	<meta charset="utf-8">
 	<title>Colony 0.1</title>
@@ -62,12 +67,12 @@
 			$(function()
 			{
 				var d = $("<div/>");
-				d.append( $("<a data='nebula.jsp'>Galaxie</a>") );
-				d.append( $("<a data='karte.jsp'>Kolonie</a>") );
-				d.append( $("<a data='forschung.jsp'>Forschung</a>") );
-				d.append( $("<a data='handel.jsp'>Handel</a>") );
-				d.append( $("<a data='statistik.jsp'>Statistik</a>") );
-				d.append( $("<a data='einstellung.jsp'>Einstellung</a>") );
+				d.append( $("<a data='nebula' href='nebula.jsp'>Galaxie</a>") );
+				d.append( $("<a data='karte' href='karte.jsp'>Kolonie</a>") );
+				d.append( $("<a data='forschung' href='forschung.jsp'>Forschung</a>") );
+				d.append( $("<a data='handel' href='handel.jsp'>Handel</a>") );
+				d.append( $("<a data='statistik' href='statistik.jsp'>Statistik</a>") );
+				d.append( $("<a data='einstellung' href='einstellung.jsp'>Einstellung</a>") );
 				d.append( $("<div/>"));
 				d.children("div").html($("<span>Konto: </span><%= Formater.formatCurrency(ContextListener.getService().getNutzer(session).getKontostand()) %> <%=
 				Formater.formatDiffCurrency( ContextListener.getService().getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %><span> / h</span>"));
@@ -75,23 +80,8 @@
 				
 				d.addClass("menuDiv_stage1");
 				$("#menuLeftDiv").append(d);
-				d.children("a[data='<%= request.getServletPath().replaceAll("/", "_").replaceAll("_pages_","") %>']").addClass("cn_aktive")
-				d.children("a").each(function()
-				{
-					$(this).attr("href",$(this).attr("data"));
-				})
 
-				var d = $("<div/>");
-				d.append( $("<a data='nebula.jsp'>Übersicht</a><span> | </span>") );
-				d.append( $("<a data='karte.jsp' class='cn_aktive'>Karte</a><span> | </span>") );
-				d.append( $("<a data='forschung.jsp'>Meine Immobilien</a><span> | </span>") );
-				d.append( $("<a data='forschung.jsp'>Gebäude bauen</a><span> | </span>") );
-				d.addClass("menuDiv_stage2");
-				$("#menuLeftDiv").append(d);
-				d.children("a").attr("href","#");
-				d.hide();
-// 				d.show();
-				d.slideDown();
+
 
 			});
 		</script>

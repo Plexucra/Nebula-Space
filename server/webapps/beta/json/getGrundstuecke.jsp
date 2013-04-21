@@ -1,3 +1,5 @@
+<%@page import="org.colony.lib.S"%>
+<%@page import="java.sql.PreparedStatement"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@page import="java.sql.ResultSetMetaData"%>
 <%@page import="java.util.ArrayList"%>
@@ -20,7 +22,13 @@ try
 	if(request.getParameter("y")!=null) y = Integer.parseInt(request.getParameter("y"));
 
 	Map<String,String> map = new HashMap<String,String>();
-	ResultSet rs = c.prepareStatement("	SELECT gebaeude.besitzerNutzerId as besitzerNutzerId, gebaeude.id as gebaeudeId, grundstueck.x as x, grundstueck.y as y, modell.typId as typId  FROM  gebaeude		join modell on (modell.id = gebaeude.modellId)			join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) where (x < "+(x+30)+") and ( x > "+(x-20)+" ) and (y < "+(y+15)+") and ( y > "+(y-8)+" )   ").executeQuery();
+	PreparedStatement ps = c.prepareStatement("	SELECT gebaeude.besitzerNutzerId as besitzerNutzerId, gebaeude.id as gebaeudeId, grundstueck.x as x, grundstueck.y as y, modell.typId as typId  FROM  gebaeude		join modell on (modell.id = gebaeude.modellId)			join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) where (x < ?) and ( x > ? ) and (y < ?) and ( y > ? ) and planetId = ?   ");
+	ps.setInt(1, x+30);
+	ps.setInt(2, x-20);
+	ps.setInt(3, y+15);
+	ps.setInt(4, y-8);
+	ps.setInt(5, S.s().getNutzer(session).getHeimatPlanetId());
+	ResultSet rs = ps.executeQuery();
 	
 	StringBuffer sb = new StringBuffer(5000);
 	if(rs!=null)

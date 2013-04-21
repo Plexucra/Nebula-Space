@@ -9,7 +9,7 @@
 <%@page import="org.colony.data.Modell"%>
 <%@page import="org.colony.lib.S"%>
 <%
-	Gebaeude g = s.service().getGebaeude(s.getInt("x"), s.getInt("y"));
+	Gebaeude g = s.service().getGebaeude(s.getNutzer().getHeimatPlanet(), s.getInt("x"), s.getInt("y"));
 	session.setAttribute("selGrundstueckX",s.getInt("x"));
 	session.setAttribute("selGrundstueckY",s.getInt("y"));
 	request.setAttribute("g", g);
@@ -83,6 +83,7 @@
 		Gebaeude g2 = new Gebaeude();
 		g2.setGrundstueckX(s.getInt("x"));
 		g2.setGrundstueckY(s.getInt("y"));
+		g2.setPlanet(s.getNutzer().getHeimatPlanet());
 		List<Gebaeude> gs = s.service().getRelevanteGebaeude(g2);
 		boolean hatNachbarn = false;
 		
@@ -172,6 +173,11 @@
 				<span class="cn_value" title="Einnahmen - Ausgaben">${g.einnahmen - g.ausgaben}</span><br/>
 				<span class="cn_label">Einnahmen:</span> ${g.einnahmen} <br/>
 				<c:choose>
+					<c:when test="${ g.modell.typ.id == 7 }">
+						<span class="cn_label">Ausgaben:</span> ${g.ausgaben} <br/>
+						<span class="cn_label">Schiff fertiggestellt:</span> <fmt:formatNumber type="percent" value="${g.auslastung/g.modell.kapazitaet}"/><br/>
+						<span class="cn_label">Herstellungszeit:</span> <fmt:formatNumber value="${ (s.ticker.duration * g.modell.kapazitaet ) / 60000}"/> min
+					</c:when>
 					<c:when test="${ g.modell.typ.id == 3 }">
 						<span class="cn_label">Ausgaben:</span> ${g.ausgaben} <br/>
 						<span class="cn_label">Mieter:</span> ${g.auslastung} von max. ${g.modell.kapazitaet}<br/>

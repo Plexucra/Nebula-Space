@@ -20,8 +20,6 @@
 	if(session.getAttribute("selFlotteId")!=null)
 	{
 		String sids = (String)session.getAttribute("selFlotteId");
-		System.out.println("-2-"+sids+"-");
-
 		if(sids.trim().length()>0 && !"false".equals( sids.trim()))
 		{
 			List<Integer> ids = new ArrayList<Integer>();
@@ -29,7 +27,6 @@
 				ids.add(Integer.parseInt(id));
 			if("sendeSelFlotte".equals(request.getParameter("action")))
 			{
-				System.out.println("-3-"+sids+"-");
 				session.setAttribute("sendeSelFlotte", null);
 				s.service().updateFlotten(ids, s.getNutzer(), s.getInt("x"), s.getInt("y"));
 			}
@@ -60,47 +57,6 @@
 			
 			$("."+ns+" .sidebar .dn_folder > div").hide();
 			$("."+ns+" .sidebar .dn_folder > h3").click(function(){ $(this).parent().children("div").toggle("slow"); });
-			<%--
-			$("."+ns+" .sidebar .dn_abreissen").click(function(e)
-			{
-				$.getJSON('../json/destroyGebaeude.jsp?x=<%=s.getInt("x")%>&y=<%=s.getInt("y")%>', function(data2) 
-				{
-					if(data2 && data2["errorMessage"])
-						alert(data2["errorMessage"]);
-					else
-					{
-						draw();
-						$("."+ns+" .sidebar").html("Gebäude wurde abgerissen.");
-					}
-				});
-			});
-			$(".${ns} .dn_gebaeudeErrichten").click(function(e)
-			{
-				$.getJSON('../json/saveGebaeude.jsp?modellId=${selModellId}&x=<%=s.getInt("x")%>&y=<%=s.getInt("y")%>', function(data2) 
-				{
-					if(data2 && data2["errorMessage"])
-					{
-						alert(data2["errorMessage"]);
-					}
-					else
-					{
-						location.replace("karte.jsp");
-					}
-				});
-			});
-
-// 			$("."+ns+" .sidebar .dn_bauen").click(function(e)
-// 			{
-// 				var tDialog = $("<div class='cn_dialogMessage' title='Bauplan für Gebäude auswählen'></div>");
-// 				$(this).append( tDialog );
-// 				$(tDialog).append("p").html("Wird geladen..");
-// 				{
-// 					$(tDialog).append("p").html(data2);
-// 				});
-// 				$(tDialog).dialog({ width: 1200, height: 600, modal: true, buttons: {  "Schließen": function() { $( this ).dialog( "close" ); } } });
-// 			});
-	--%>
-	
 			$(".${ns} .cn_aktionsleiste").hide();
 			$(".${ns}_flottenliste").buttonset();
 			$(".${ns}_flottenliste input").button({ icons: { primary: "ui-icon-check" }, text: false }).click(function() 
@@ -121,9 +77,6 @@
 					if(count!=1) $(".${ns} .cn_aktionsleiste a.dn_teilen").button( "option", "disabled", true );
 					if(count < 2) $(".${ns} .cn_aktionsleiste a.dn_vereinen").button( "option", "disabled", true );
 				}
-// 				alert(count);
-
-// 				if(  $(this).prop('checked')   )
 			});
 			
 			$(".${ns} .cn_aktionsleiste a.dn_senden").click(function()
@@ -154,8 +107,6 @@
 		});
 	</script>
 <div>
-<%-- _${ param['selFlotteId'] } --%>
-
 	<c:if test="${ not empty selFlotte }">
 		<h3>Ausgewählte Flotten</h3>
 		<div>

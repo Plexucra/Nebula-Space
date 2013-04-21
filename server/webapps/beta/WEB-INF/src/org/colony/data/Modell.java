@@ -15,7 +15,7 @@ public class Modell
 	int kapazitaet;
 	public int getBaukosten()
 	{
-		return getKapazitaet()*100;
+		return (getKapazitaet()*100)+5000;
 	}
 	public int getBauzeit()
 	{

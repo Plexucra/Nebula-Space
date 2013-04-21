@@ -1,9 +1,11 @@
+<%@page import="org.colony.lib.S"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="include/page-header.jsp" %>
 <script>
 	<%
-	int selPosX = 0;
-	int selPosY = 0;
+	request.setAttribute("s", new S(request));
+	int selPosX = S.s().getNutzer(session).getHeimatPlanet().getX();
+	int selPosY = S.s().getNutzer(session).getHeimatPlanet().getY();
 	if(session.getAttribute("selPosX")!=null) selPosX=(Integer)session.getAttribute("selPosX");
 	if(session.getAttribute("selPosY")!=null) selPosY=(Integer)session.getAttribute("selPosY");
 	if(request.getParameter("x")!=null) selPosX=Integer.parseInt(request.getParameter("x"));
@@ -23,6 +25,19 @@
 		<%
 	}
 	%>
+	
+	$(function()
+	{
+		$("#menuDiv a[data='nebula']").addClass("cn_aktive");
+		var d = $("<div/>");
+		d.append( $("<a href='nebula.jsp' class='cn_aktive'>Nebula</a><span> | </span>") );
+		d.append( $("<a href='nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>") );
+		d.append( $("<a href='nebula-flotten.jsp'>Meine Flotten</a>") );
+		d.addClass("menuDiv_stage2");
+		$("#menuLeftDiv").append(d);
+		d.hide();
+		d.slideDown();
+	});
 </script>
 <script src="../js/pages/nebula.js"></script>
 <div id="mapBox">

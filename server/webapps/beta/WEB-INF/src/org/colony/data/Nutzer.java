@@ -1,18 +1,25 @@
 package org.colony.data;
 
+import org.colony.lib.S;
+
 public class Nutzer
 {
 	int id;
 	String alias;
 	String key;
-	int kontostand;
+	long kontostand;
 	int gewinn;
 	int anzahlGebaeude = 0;
-	int heimatplanetId;
+	int heimatPlanetId;
+	
+	public Planet getHeimatPlanet()
+	{
+		return S.s().getPlanet(getHeimatPlanetId());
+	}
 	
 	public int getBauplatzKosten()
 	{
-		return anzahlGebaeude*10000;
+		return anzahlGebaeude>20?((anzahlGebaeude-20)*3000):0;
 	}
 	
 	public int getId()
@@ -30,14 +37,6 @@ public class Nutzer
 	public void setAlias(String alias)
 	{
 		this.alias = alias;
-	}
-	public int getKontostand()
-	{
-		return kontostand;
-	}
-	public void setKontostand(int kontostand)
-	{
-		this.kontostand = kontostand;
 	}
 	public String getKey()
 	{
@@ -62,5 +61,25 @@ public class Nutzer
 	public void setAnzahlGebaeude(int anzahlGebaeude)
 	{
 		this.anzahlGebaeude = anzahlGebaeude;
+	}
+
+	public int getHeimatPlanetId()
+	{
+		return heimatPlanetId;
+	}
+
+	public void setHeimatPlanetId(int heimatPlanetId)
+	{
+		this.heimatPlanetId = heimatPlanetId;
+	}
+
+	public long getKontostand()
+	{
+		return kontostand;
+	}
+
+	public void setKontostand(long kontostand)
+	{
+		this.kontostand = kontostand;
 	}
 }

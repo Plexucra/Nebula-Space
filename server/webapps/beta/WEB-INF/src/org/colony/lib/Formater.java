@@ -42,4 +42,19 @@ public class Formater
 		sb.append("</span>");
 		return sb.toString();
 	}
+	public static String formatCurrency(long value)
+	{
+		StringBuffer sb = new StringBuffer();
+		if(value<0)
+		{
+			sb.append("<span class='cn_negativ'>");
+		}
+		else
+		{
+			sb.append("<span class='cn_positiv'>");
+		}
+		sb.append(cf.format(value));
+		sb.append("</span>");
+		return sb.toString();
+	}
 }

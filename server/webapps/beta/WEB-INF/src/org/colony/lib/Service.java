@@ -47,7 +47,6 @@ public class Service
 			List<Flotte> sprungFlotten = getSprungFlotten(c);
 			for(Flotte f: sprungFlotten)
 			{
-				System.out.println(f.getId()+" x:"+f.getX()+" y:"+f.getY());
 				f.setPosition(f.getSprungziel());
 				if( f.getX()==f.getZielX() && f.getY()==f.getZielY())
 				{
@@ -86,31 +85,45 @@ public class Service
 			
 
 			//------------------------- Gebäude updaten --------------------------
-			Planet s = getPlanet(1);
-			List<Gebaeude> relGebs = getRelevanteGebaeude(s);
-			List<Gebaeude> planetGebs = getGebaeude(s);
-			if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-			for(Gebaeude g : planetGebs)
+			for(Planet p : getPlaneten().values())
 			{
-				g.setAlter(g.getAlter()+1);
-				if(g.getAlter()<0)
+				List<Gebaeude> relGebs = getRelevanteGebaeude(p);
+				List<Gebaeude> planetGebs = getGebaeude(p);
+				if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
+				for(Gebaeude g : planetGebs)
 				{
-					g.setAusgaben(0);
-					g.setAuslastung(0);
-					g.setEffizienz(0);
-					g.setEinnahmen(0);
-				}
-				else
-				{
-					g.setEffizienz(getEffizienz(g, relGebs));
-					g.setAuslastung(getAuslastung(g));
-					g.setEinnahmen(getEinnahmen(g));
-					g.setAusgaben(getAusgaben(g));
-				}
-			}
-			if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-			updateGebaeude(c, planetGebs);
+					g.setAlter(g.getAlter()+1);
+					if(g.getAlter()<0)
+					{
+						g.setAusgaben(0);
+						g.setAuslastung(0);
+						g.setEffizienz(0);
+						g.setEinnahmen(0);
+					}
+					else
+					{
+						g.setEffizienz(getEffizienz(g, relGebs));
+						g.setAuslastung(getAuslastung(g));
+						g.setEinnahmen(getEinnahmen(g));
+						g.setAusgaben(getAusgaben(g));
+					}
+					if(g.getModell().getTyp().getId() == 7 && g.getAuslastung()==g.getModell().getKapazitaet())
+					{
+						List<Flotte> hFlotten = getHeimatFlotten(g.getBesitzer(),c);
+						Flotte f = null; 
+						if(hFlotten!=null && hFlotten.size()>0) f = hFlotten.get(0);
+						else f = insertHeimatflotte(g.getBesitzer());
+						Schiffsmodell neuesSchiff = null;
+						for(Schiffsmodell sm : getSchiffsmodelle().values())
+							if(sm.getFabrikModellId() == g.getModell().getId())
+								neuesSchiff = sm;
+						insertFlottenschiff(f,neuesSchiff);
 
+					}
+				}
+				if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
+				updateGebaeude(c, planetGebs);
+			}
 			
 			//------------------------- Globale updates --------------------------
 			statement = c.createStatement();
@@ -153,6 +166,11 @@ public class Service
 		{
 			result = 	Math.round(((float)g.getModell().getKapazitaet())*g.getEffizienz());
 	//		g.setEinnahmen(		g.getAuslastung());
+		}
+		else if(g.getModell().getTyp().getId()==7)
+		{
+			if(g.getAuslastung()>g.getModell().getKapazitaet()) result = 0;
+			else result = g.getAuslastung()+1;
 		}
 		else
 		{
@@ -291,6 +309,20 @@ public class Service
 		}
 		finally { c.close(); }
 	}
+	public List<Flotte> getHeimatFlotten(Nutzer nutzer, Connection c) throws Exception
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ? and x = ? and y = ? ");
+		ps.setInt(1, nutzer.getId());
+		ps.setInt(2, nutzer.getHeimatPlanet().getX());
+		ps.setInt(3, nutzer.getHeimatPlanet().getY());
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+
 	public List<Flotte> getFlotten(List<Integer> ids, Nutzer nutzer, Connection c) throws Exception
 	{
 		List<Flotte> results = new ArrayList<Flotte>();
@@ -302,6 +334,32 @@ public class Service
 		while(rs != null && rs.next()) results.add(new Flotte(rs));
 		if(rs!=null) rs.close();
 		ps.close();
+		return results;
+	}
+
+
+	public List<Flotte> getFlotten(Nutzer nutzer) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			return getFlotten(nutzer, c);
+		}
+		finally { c.close(); }
+	}
+
+	public List<Flotte> getFlotten(Nutzer nutzer, Connection c) throws Exception
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ?");
+		ps.setInt(1, nutzer.getId());
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		System.out.println("t1:"+ps.toString());
+		System.out.println("t2:"+results);
+		System.out.println("t3:"+results.size());
 		return results;
 	}
 
@@ -387,16 +445,16 @@ public class Service
 		return results;
 	}
 
-	public Gebaeude getGebaeude(int x, int y) throws Exception
+	public Gebaeude getGebaeude(Planet p, int x, int y) throws Exception
 	{
 		Connection c = DbEngine.getConnection();
 		try
 		{
-			return getGebaeude(x, y, c);
+			return getGebaeude(p, x, y, c);
 		}
 		finally { c.close(); }
 	}
-	public Gebaeude getGebaeude(int x, int y, Connection c) throws Exception
+	public Gebaeude getGebaeude(Planet p, int x, int y, Connection c) throws Exception
 	{
 		Gebaeude results = null;
 		PreparedStatement ps;
@@ -409,6 +467,7 @@ public class Service
 		sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
 		sb.append("	grundstueck.x as grundstueckX, ");
 		sb.append("	grundstueck.y as grundstueckY, ");
+		sb.append("	grundstueck.planetId as planetId, ");
 		sb.append("	gebaeude.modellId as modellId, ");
 		sb.append("	grundstueck.planetId as planetId ");
 		sb.append("	from gebaeude ");
@@ -416,9 +475,11 @@ public class Service
 		sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
 		sb.append("	where grundstueck.x = ?");
 		sb.append("	and grundstueck.y = ?");
+		sb.append("	and planetId = ?");
 		ps = c.prepareStatement(sb.toString());
 		ps.setInt(1, x);
 		ps.setInt(2, y);
+		ps.setInt(3, p.getId());
 		if(debug) System.out.println(ps.toString()+"\n\n x:"+x+" y:"+y);
 
 		rs = ps.executeQuery();
@@ -604,9 +665,10 @@ public class Service
 			p.setId(rs.getInt("id"));
 			p.setAlias(rs.getString("alias"));
 			p.setKey(rs.getString("key"));
-			p.setKontostand(rs.getInt("kontostand"));
+			p.setKontostand(rs.getLong("kontostand"));
 			p.setGewinn(rs.getInt("einnahmen"));
 			p.setAnzahlGebaeude(rs.getInt("anzahlGebaeude"));
+			p.setHeimatPlanetId(rs.getInt("heimatPlanetId"));
 			nutzer.put(p.getId(),p);
 		}
 		rs.close();
@@ -821,13 +883,30 @@ public class Service
 		{
 			c = DbEngine.getConnection();
 			PreparedStatement ps;
-			ps = c.prepareStatement("insert into nutzer (`key`,`alias`) values (?,?)");
+			
+			int planetId = 0;
+			ps = c.prepareStatement("SELECT count(heimatPlanetId) as anzahlNutzer, heimatPlanetId FROM nutzer group by heimatPlanetId order by anzahlNutzer limit 1");
+			ResultSet rs = ps.executeQuery();
+			if(rs!=null && rs.next())
+			{
+				planetId = rs.getInt("heimatPlanetId");
+				rs.close();
+			}
+			ps.close();
+			
+			ps = c.prepareStatement("insert into nutzer (`key`,`alias`,heimatPlanetId) values (?,?,?)");
 			ps.setString(1, nutzer.getKey());
 			ps.setString(2, nutzer.getAlias());
+			ps.setInt(3, planetId);
 			ps.executeUpdate();
 			ps.close();
+			
 			c.commit();
 			loadNutzer(c);
+
+			//Damit man stehts was zum anbauen hat..
+			if(getGebaeude(getPlanet(planetId), 0, 0, c)==null)
+				insertGebaeude(getNutzerByKey(nutzer.getKey()), 0, 0, 1);
 		}
 		catch(Exception ex)
 		{
@@ -837,12 +916,80 @@ public class Service
 		finally { c.close(); }
 		return null;
 	}
+	synchronized public Flotte insertHeimatflotte(Nutzer n) throws Exception
+	{
+		Flotte result = null;
+		Connection c = null;
+		try
+		{
+			c = DbEngine.getConnection();
+			
+			PreparedStatement ps = c.prepareStatement("insert into flotte (besitzerNutzerId,zielX,zielY,x,y,sprungAufladung) values (?,?,?,?,?,-1)");
+			ps.setInt(1, n.getId());
+			ps.setInt(2, n.getHeimatPlanet().getX());
+			ps.setInt(3, n.getHeimatPlanet().getY());
+			ps.setInt(4, n.getHeimatPlanet().getX());
+			ps.setInt(5, n.getHeimatPlanet().getY());
+			ps.executeUpdate();
+			ps.close();
+			
+			ResultSet rs = c.prepareStatement("select * from flotte where id = LAST_INSERT_ID()").executeQuery();
+			result = new Flotte(rs);
+			
+			c.commit();
+		}
+		catch(Exception ex)
+		{
+			c.rollback();
+			throw ex;
+		}
+		finally { c.close(); }
+		return result;
+	}
+	synchronized public void insertFlottenschiff(Flotte f, Schiffsmodell sm) throws Exception
+	{
+		Connection c = null;
+		try
+		{
+			c = DbEngine.getConnection();
+			
+			Geschwader zielGeschwader = null;
+			for(Geschwader g : getGeschwader(f, c))
+				if(g.getSchiffsmodellId() == sm.getId())
+					zielGeschwader = g;
+			
+			if(zielGeschwader == null)
+			{
+				PreparedStatement ps = c.prepareStatement("insert into geschwader (`flotteId`,`schiffsmodellId`,anzahl) values (?,?,1)");
+				ps.setInt(1, f.getId());
+				ps.setInt(2, sm.getId());
+				ps.executeUpdate();
+				ps.close();
+			}
+			else
+			{
+				PreparedStatement ps = c.prepareStatement("update geschwader set anzahl = anzahl+1 where id = ?");
+				ps.setInt(1, zielGeschwader.getId());
+				ps.executeUpdate();
+				ps.close();
+			}
+			
+			c.commit();
+		}
+		catch(Exception ex)
+		{
+			c.rollback();
+			throw ex;
+		}
+		finally { c.close(); }
+	}
+
 	public void destroyGebaeude(Nutzer nutzer, int x, int y) throws Exception
 	{
 		Connection c = DbEngine.getConnection();
 		try
 		{
-			Gebaeude g = getGebaeude(x,y,c);
+			Gebaeude g = getGebaeude( nutzer.getHeimatPlanet(), x, y, c);
 			if(g==null) throw new Exception("Das zu zerstörende Gebäude konnte nicht gefunden werden.");
 
 			if(g.getBesitzer().getId()!=nutzer.getId())
@@ -869,7 +1016,7 @@ public class Service
 		Connection c = DbEngine.getConnection();
 		try
 		{
-			Gebaeude g = getGebaeude(x,y,c);
+			Gebaeude g = getGebaeude(nutzer.getHeimatPlanet(), x,y,c);
 			int kosten = getModell(modellId).getBaukosten();
 			if(g==null) kosten += nutzer.getBauplatzKosten();
 			if(kosten > nutzer.getKontostand())
@@ -906,7 +1053,7 @@ public class Service
 				ps.close();
 	
 				ps = c.prepareStatement("INSERT INTO grundstueck (gebaeudeId, planetId, x, y) VALUES (LAST_INSERT_ID(), ?, ?, ?)");
-				ps.setInt(1, 1);
+				ps.setInt(1, nutzer.getHeimatPlanetId());
 				ps.setInt(2, x);
 				ps.setInt(3, y);
 				ps.executeUpdate();
@@ -960,44 +1107,9 @@ public class Service
 			sb.append("	from gebaeude ");
 			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where `alter` > 0");
+			sb.append("	where `alter` > 0 and grundstueck.planetId = ? ");
 			ps = c.prepareStatement(sb.toString());
-//			
-//			ps = c.prepareStatement("select * from v_gebaeude "+
-//				" where v_gebaeude.planetId in ( "+
-//				" select id from planet s "+
-//				" where  "+
-//				"     (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" or  (s.x = ? and s.y = ?) "+
-//				" ) ");
-//
-//			ps.setInt(1, s.getX());
-//			ps.setInt(2, s.getY());
-//			ps.setInt(3, s.getX());
-//			ps.setInt(4, s.getY()+1);
-//			ps.setInt(5, s.getX());
-//			ps.setInt(6, s.getY()-1);
-//
-//			ps.setInt(7, s.getX()+1);
-//			ps.setInt(8, s.getY());
-//			ps.setInt(9, s.getX()+1);
-//			ps.setInt(10, s.getY()+1);
-//			ps.setInt(11, s.getX()+1);
-//			ps.setInt(12, s.getY()-1);
-//
-//			ps.setInt(13, s.getX()-1);
-//			ps.setInt(14, s.getY());
-//			ps.setInt(15, s.getX()-1);
-//			ps.setInt(16, s.getY()+1);
-//			ps.setInt(17, s.getX()-1);
-//			ps.setInt(18, s.getY()-1);
+			ps.setInt(1, s.getId());
 
 			rs = ps.executeQuery();
 			while(rs != null && rs.next())
@@ -1088,5 +1200,17 @@ public class Service
 	public List<Modell> getModellListe()
 	{
 		return modellListe;
+	}
+
+
+	public Map<Integer, Schiffsmodell> getSchiffsmodelle()
+	{
+		return schiffsmodelle;
+	}
+
+
+	public void setSchiffsmodelle(Map<Integer, Schiffsmodell> schiffsmodelle)
+	{
+		this.schiffsmodelle = schiffsmodelle;
 	}
 }
