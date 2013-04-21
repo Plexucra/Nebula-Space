@@ -4,7 +4,7 @@ import org.colony.lib.ContextListener;
 
 public class Gebaeude
 {
-	Sektor sektor;
+	Planet planet;
 	int id;
 	Modell modell;
 //	int besitzerNutzerId;
@@ -28,16 +28,6 @@ public class Gebaeude
 		return ContextListener.getService().getArbeitskostenanteil(this);
 	}
 
-	
-	public Sektor getSektor()
-	{
-		return sektor;
-	}
-
-	public void setSektor(Sektor sektor)
-	{
-		this.sektor = sektor;
-	}
 
 	public int getId()
 	{
@@ -147,5 +137,15 @@ public class Gebaeude
 	public void setBesitzer(Nutzer besitzer)
 	{
 		this.besitzer = besitzer;
+	}
+
+	public Planet getPlanet()
+	{
+		return planet;
+	}
+
+	public void setPlanet(Planet planet)
+	{
+		this.planet = planet;
 	}
 }

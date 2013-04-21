@@ -18,10 +18,9 @@ import org.colony.data.Gebaeude;
 import org.colony.data.Geschwader;
 import org.colony.data.Modell;
 import org.colony.data.Nutzer;
-import org.colony.data.Position;
+import org.colony.data.Planet;
 import org.colony.data.Produkt;
 import org.colony.data.Schiffsmodell;
-import org.colony.data.Sektor;
 import org.colony.data.Typ;
 
 public class Service
@@ -32,7 +31,7 @@ public class Service
 	Map<Integer,Modell> modelle = new HashMap<Integer, Modell>();
 	List<Modell> modellListe = new ArrayList<Modell>();
 	Map<Integer,Schiffsmodell> schiffsmodelle = new HashMap<Integer, Schiffsmodell>();
-	Map<Integer,Sektor> sektoren = new HashMap<Integer, Sektor>();
+	Map<Integer,Planet> planeten = new HashMap<Integer, Planet>();
 	private Map<Integer,Nutzer> nutzer = new HashMap<Integer, Nutzer>();
 	public boolean debug = false;
 
@@ -56,7 +55,7 @@ public class Service
 				}
 				else
 				{
-					Position sprungZiel = f.getSprungziel();
+//					Position sprungZiel = f.getSprungziel();
 					int sprungzeit = 0;
 					for(Geschwader g : getGeschwader(f, c))
 					{
@@ -87,11 +86,11 @@ public class Service
 			
 
 			//------------------------- Gebäude updaten --------------------------
-			Sektor s = getSektor(1);
+			Planet s = getPlanet(1);
 			List<Gebaeude> relGebs = getRelevanteGebaeude(s);
-			List<Gebaeude> sektorGebs = getGebaeude(s);
+			List<Gebaeude> planetGebs = getGebaeude(s);
 			if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-			for(Gebaeude g : sektorGebs)
+			for(Gebaeude g : planetGebs)
 			{
 				g.setAlter(g.getAlter()+1);
 				if(g.getAlter()<0)
@@ -110,7 +109,7 @@ public class Service
 				}
 			}
 			if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-			updateGebaeude(c, sektorGebs);
+			updateGebaeude(c, planetGebs);
 
 			
 			//------------------------- Globale updates --------------------------
@@ -218,33 +217,33 @@ public class Service
 	{
 		return schiffsmodelle.get(id);
 	}
-	public Sektor getSektor(int id)
+	public Planet getPlanet(int id)
 	{
-		return sektoren.get(id);
+		return planeten.get(id);
 	}
 	public Typ getTyp(int id)
 	{
 		return typen.get(id);
 	}
-	
-	public void updateSektorBewohner(Connection c, Sektor s, int wohnraum) throws SQLException
-	{
-		float sektorGeburtenrate = 1.1f;
-		int sektorBewohner = Math.round(s.getBewohner()*sektorGeburtenrate);
-		if(sektorBewohner > wohnraum)
-		{
-			if(sektorBewohner>100)
-				sektorBewohner = wohnraum;
-			else
-				sektorBewohner = s.getBewohner();
-		}
-		PreparedStatement sektorPs = c.prepareStatement("update sektor set bewohner = ? where id = ?");
-		sektorPs.setInt(1, sektorBewohner);
-		sektorPs.setInt(2, s.getId());
-		sektorPs.executeUpdate();
-		sektorPs.close();
-		s.setBewohner(sektorBewohner);
-	}
+//	
+//	public void updatePlanetBewohner(Connection c, Planet s, int wohnraum) throws SQLException
+//	{
+//		float planetGeburtenrate = 1.1f;
+//		int planetBewohner = Math.round(s.getBewohner()*planetGeburtenrate);
+//		if(planetBewohner > wohnraum)
+//		{
+//			if(planetBewohner>100)
+//				planetBewohner = wohnraum;
+//			else
+//				planetBewohner = s.getBewohner();
+//		}
+//		PreparedStatement planetPs = c.prepareStatement("update planet set bewohner = ? where id = ?");
+//		planetPs.setInt(1, planetBewohner);
+//		planetPs.setInt(2, s.getId());
+//		planetPs.executeUpdate();
+//		planetPs.close();
+//		s.setBewohner(planetBewohner);
+//	}
 	
 	public void updateGebaeude(Connection c, List<Gebaeude> gebs) throws SQLException
 	{
@@ -271,35 +270,75 @@ public class Service
 		}
 		finally { c.close(); }
 	}
+
+	private String generateQsForIn(int numQs)
+	{
+	    StringBuffer items = new StringBuffer(numQs*5);
+	    for (int i = 0; i < numQs; i++) 
+	    {
+	        if (i != 0) items.append(", ");
+	        items.append("?");
+	    }
+	    return items.toString();
+	}
+
+	public List<Flotte> getFlotten(List<Integer> ids, Nutzer nutzer) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			return getFlotten(ids, nutzer, c);
+		}
+		finally { c.close(); }
+	}
+	public List<Flotte> getFlotten(List<Integer> ids, Nutzer nutzer, Connection c) throws Exception
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ? and id in ("+generateQsForIn(ids.size())+")");
+		ps.setInt(1, nutzer.getId());
+		for(int i=0; i<ids.size(); i++)
+			ps.setInt(2+i, ids.get(i));
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+
+
+	public void updateFlotten(List<Integer> ids, Nutzer nutzer, int zielX, int zielY) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			updateFlotten(ids, nutzer, zielX, zielY, c);
+			c.commit();
+		}
+		finally { c.close(); }
+	}
+
+	public void updateFlotten(List<Integer> ids, Nutzer nutzer, int zielX, int zielY, Connection c) throws Exception
+	{
+		PreparedStatement ps = c.prepareStatement("update flotte set sprungAufladung=30, zielX = ?, zielY = ? where besitzerNutzerId = ? and id in ("+generateQsForIn(ids.size())+")");
+		ps.setInt(1, zielX);
+		ps.setInt(2, zielY);
+		ps.setInt(3, nutzer.getId());
+		for(int i=0; i<ids.size(); i++)
+			ps.setInt(4+i, ids.get(i));
+		System.out.println(ps.toString()+"\n\n x:"+nutzer.getId());
+		ps.executeUpdate();
+		ps.close();
+	}
+
 	
 	public List<Flotte> getFlotten(int x, int y, Connection c) throws Exception
 	{
 		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps;
-		ResultSet rs;
-		// ----------------------------------------------------------------------------------------------------
-		// ----------------------------------------- Gebäude -----------------------------------
-		// ----------------------------------------------------------------------------------------------------
-		StringBuffer sb = new StringBuffer(200);
-		sb.append("	SELECT  ");
-		sb.append("	id, ");
-		sb.append("	besitzerNutzerId, ");
-		sb.append("	zielX, ");
-		sb.append("	zielY, ");
-		sb.append("	x, ");
-		sb.append("	y, ");
-		sb.append("	sprungAufladung ");
-		sb.append("	from flotte ");
-		sb.append("	where x = ?");
-		sb.append("	and y = ?");
-		ps = c.prepareStatement(sb.toString());
+		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where x = ? and y = ?");
 		ps.setInt(1, x);
 		ps.setInt(2, y);
-		if(debug) System.out.println(ps.toString()+"\n\n x:"+x+" y:"+y);
-
-		rs = ps.executeQuery();
-		while(rs != null && rs.next())
-			results.add(new Flotte(rs));
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
 		if(rs!=null) rs.close();
 		ps.close();
 		return results;
@@ -326,7 +365,7 @@ public class Service
 	public List<Geschwader> getGeschwader(Flotte f, Connection c) throws Exception
 	{
 		List<Geschwader> results = new ArrayList<Geschwader>();
-		PreparedStatement ps = c.prepareStatement("	SELECT * from Geschwader");
+		PreparedStatement ps = c.prepareStatement("	SELECT * from Geschwader where flotteId = "+f.getId());
 		ResultSet rs = ps.executeQuery();
 		while(rs != null && rs.next()) results.add(new Geschwader(rs));
 		if(rs!=null) rs.close();
@@ -371,7 +410,7 @@ public class Service
 		sb.append("	grundstueck.x as grundstueckX, ");
 		sb.append("	grundstueck.y as grundstueckY, ");
 		sb.append("	gebaeude.modellId as modellId, ");
-		sb.append("	grundstueck.sektorId as sektorId ");
+		sb.append("	grundstueck.planetId as planetId ");
 		sb.append("	from gebaeude ");
 		sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 		sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
@@ -397,7 +436,7 @@ public class Service
 			g.setGrundstueckX(rs.getInt("grundstueckX"));
 			g.setGrundstueckY(rs.getInt("grundstueckY"));
 			g.setModell(getModell(rs.getInt("modellId")));
-			g.setSektor(getSektor(rs.getInt("sektorId")));
+			g.setPlanet(getPlanet(rs.getInt("planetId")));
 			results = g;
 		}
 		if(rs!=null) rs.close();
@@ -405,7 +444,7 @@ public class Service
 		return results;
 	}
 	
-	public List<Gebaeude> getGebaeude(Sektor s) throws Exception
+	public List<Gebaeude> getGebaeude(Planet s) throws Exception
 	{
 		List<Gebaeude> results = new ArrayList<Gebaeude>();
 		Connection c = DbEngine.getConnection();
@@ -422,11 +461,11 @@ public class Service
 			sb.append("	grundstueck.x as grundstueckX, ");
 			sb.append("	grundstueck.y as grundstueckY, ");
 			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.sektorId as sektorId ");
+			sb.append("	grundstueck.planetId as planetId ");
 			sb.append("	from gebaeude ");
 			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where sektorId = ?");
+			sb.append("	where planetId = ?");
 			ps = c.prepareStatement(sb.toString());
 			
 			ps.setInt(1, s.getId());
@@ -445,7 +484,7 @@ public class Service
 				g.setGrundstueckX(rs.getInt("grundstueckX"));
 				g.setGrundstueckY(rs.getInt("grundstueckY"));
 				g.setModell(getModell(rs.getInt("modellId")));
-				g.setSektor(getSektor(rs.getInt("sektorId")));
+				g.setPlanet(getPlanet(rs.getInt("planetId")));
 				results.add(g);
 			}
 			if(rs!=null) rs.close();
@@ -471,7 +510,7 @@ public class Service
 			sb.append("	grundstueck.x as grundstueckX, ");
 			sb.append("	grundstueck.y as grundstueckY, ");
 			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.sektorId as sektorId ");
+			sb.append("	grundstueck.planetId as planetId ");
 			sb.append("	from gebaeude ");
 			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
@@ -494,7 +533,7 @@ public class Service
 				g.setGrundstueckX(rs.getInt("grundstueckX"));
 				g.setGrundstueckY(rs.getInt("grundstueckY"));
 				g.setModell(getModell(rs.getInt("modellId")));
-				g.setSektor(getSektor(rs.getInt("sektorId")));
+				g.setPlanet(getPlanet(rs.getInt("planetId")));
 				rs.close();
 			}
 			ps.close();
@@ -582,19 +621,17 @@ public class Service
 			ResultSet rs;
 			loadNutzer(c);
 			// ----------------------------------------------------------------------------------------------------
-			// ----------------------------------------- Sektor -----------------------------------
+			// ----------------------------------------- Planet -----------------------------------
 			// ----------------------------------------------------------------------------------------------------
-			ps = c.prepareStatement("select * from sektor");
+			ps = c.prepareStatement("select * from planet");
 			rs = ps.executeQuery();
 			while (rs != null && rs.next())
 			{
-				Sektor p = new Sektor();
+				Planet p = new Planet();
 				p.setId(rs.getInt("id"));
 				p.setX(rs.getInt("x"));
 				p.setY(rs.getInt("y"));
-				p.setPlanetId(rs.getInt("planetId"));
-				p.setBewohner(rs.getInt("bewohner"));
-				sektoren.put(p.getId(),p);
+				planeten.put(p.getId(),p);
 			}
 			rs.close();
 			ps.close();
@@ -868,7 +905,7 @@ public class Service
 				ps.executeUpdate();
 				ps.close();
 	
-				ps = c.prepareStatement("INSERT INTO grundstueck (gebaeudeId, sektorId, x, y) VALUES (LAST_INSERT_ID(), ?, ?, ?)");
+				ps = c.prepareStatement("INSERT INTO grundstueck (gebaeudeId, planetId, x, y) VALUES (LAST_INSERT_ID(), ?, ?, ?)");
 				ps.setInt(1, 1);
 				ps.setInt(2, x);
 				ps.setInt(3, y);
@@ -899,9 +936,9 @@ public class Service
 	
 	public List<Gebaeude> getRelevanteGebaeude(Gebaeude forG) throws Exception
 	{
-		return getRelevanteGebaeude(forG.getSektor());
+		return getRelevanteGebaeude(forG.getPlanet());
 	}
-	public List<Gebaeude> getRelevanteGebaeude(Sektor s) throws Exception
+	public List<Gebaeude> getRelevanteGebaeude(Planet s) throws Exception
 	{
 		List<Gebaeude> results = new ArrayList<Gebaeude>();
 		Connection c = DbEngine.getConnection();
@@ -919,7 +956,7 @@ public class Service
 			sb.append("	grundstueck.x as grundstueckX, ");
 			sb.append("	grundstueck.y as grundstueckY, ");
 			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.sektorId as sektorId ");
+			sb.append("	grundstueck.planetId as planetId ");
 			sb.append("	from gebaeude ");
 			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
@@ -927,8 +964,8 @@ public class Service
 			ps = c.prepareStatement(sb.toString());
 //			
 //			ps = c.prepareStatement("select * from v_gebaeude "+
-//				" where v_gebaeude.sektorId in ( "+
-//				" select id from sektor s "+
+//				" where v_gebaeude.planetId in ( "+
+//				" select id from planet s "+
 //				" where  "+
 //				"     (s.x = ? and s.y = ?) "+
 //				" or  (s.x = ? and s.y = ?) "+
@@ -977,7 +1014,7 @@ public class Service
 				g.setGrundstueckX(rs.getInt("grundstueckX"));
 				g.setGrundstueckY(rs.getInt("grundstueckY"));
 				g.setModell(getModell(rs.getInt("modellId")));
-				g.setSektor(getSektor(rs.getInt("sektorId")));
+				g.setPlanet(getPlanet(rs.getInt("planetId")));
 				results.add(g);
 			}
 			if(rs!=null) rs.close();
@@ -1028,9 +1065,9 @@ public class Service
 	{
 		return modelle;
 	}
-	public Map<Integer, Sektor> getSektoren()
+	public Map<Integer, Planet> getPlaneten()
 	{
-		return sektoren;
+		return planeten;
 	}
 	public Map<Integer, Nutzer> getNutzer()
 	{

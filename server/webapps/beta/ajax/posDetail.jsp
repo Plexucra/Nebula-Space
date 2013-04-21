@@ -1,3 +1,4 @@
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@ include file="include/ajax-header.jsp" %>
 <%@ page pageEncoding="UTF-8"%>
@@ -12,6 +13,32 @@
 	session.setAttribute("selPosX",s.getInt("x"));
 	session.setAttribute("selPosY",s.getInt("y"));
 	request.setAttribute("flotten", s.service().getFlotten(s.getInt("x"), s.getInt("y")));
+	if(request.getParameter("selFlotteId")!=null && request.getParameter("selFlotteId").trim().length()>0)
+	{
+		session.setAttribute("selFlotteId",request.getParameter("selFlotteId"));
+	}
+	if(session.getAttribute("selFlotteId")!=null)
+	{
+		String sids = (String)session.getAttribute("selFlotteId");
+		System.out.println("-2-"+sids+"-");
+
+		if(sids.trim().length()>0 && !"false".equals( sids.trim()))
+		{
+			List<Integer> ids = new ArrayList<Integer>();
+			for(String id : sids.split(","))
+				ids.add(Integer.parseInt(id));
+			if("sendeSelFlotte".equals(request.getParameter("action")))
+			{
+				System.out.println("-3-"+sids+"-");
+				session.setAttribute("sendeSelFlotte", null);
+				s.service().updateFlotten(ids, s.getNutzer(), s.getInt("x"), s.getInt("y"));
+			}
+			else
+			{
+				request.setAttribute("selFlotte",s.service().getFlotten(ids, s.getNutzer()));
+			}
+		}
+	}
 %>
 	<script>
 		$(function()
@@ -98,9 +125,72 @@
 
 // 				if(  $(this).prop('checked')   )
 			});
+			
+			$(".${ns} .cn_aktionsleiste a.dn_senden").click(function()
+			{
+				var selIds = "";
+				$(".${ns}_flottenliste input").each(function()
+				{
+					if($(this).prop('checked'))
+					{
+						if(selIds!="") selIds+",";
+						selIds+=$(this).val();
+					}
+				});
+				location.replace("nebula.jsp?selFlotteId=" + selIds);
+			});
+			
+			
+			$(".${ns} a.dn_versenden").click(function()
+			{
+				alert("d");
+				$.get('../ajax/posDetail.jsp?x=<%=s.getInt("x")%>&y=<%=s.getInt("y")%>&action=sendeSelFlotte', function(data2) 
+				{
+					$("."+ns+" .sidebar").html(data2);
+				});
+			});
+			
+			
 		});
 	</script>
 <div>
+<%-- _${ param['selFlotteId'] } --%>
+
+	<c:if test="${ not empty selFlotte }">
+		<h3>Ausgewählte Flotten</h3>
+		<div>
+			<div class="${ns}_flottenliste">
+				<table>
+					<tr>
+						<th>Besitzer</th>
+						<th>Ziel</th>
+						<th><span title="Sprung erfolgt in .. Ticks">S</span></th>
+					</tr>
+					<c:forEach items="${ selFlotte }" var="row">
+						<tr>
+							<td>${row.besitzer.alias}</td>
+							<td>${row.zielX}:${row.zielY}</td>
+							<td>${row.sprungAufladung}</td>
+						</tr>
+						<c:forEach items="${ row.geschwader }" var="geschwader">
+							<tr>
+								<td colspan="4">
+									${ geschwader.anzahl } 
+									${ geschwader.schiffsmodell.bezeichnung }
+								</td>
+							</tr>
+						</c:forEach>
+					</c:forEach>
+				</table>
+			</div>
+			<br/>
+			<a class="dn_versenden" href="javascript:;" title="Die ausgewählten Flotten versenden..">hierhin versenden</a>
+			<br/>
+			<br/>
+		</div>
+	</c:if>
+
+
 	<h3>Flotten</h3>
 	<div>
 		<span class="cn_label">Position:</span>
@@ -108,7 +198,7 @@
 
 		<div class="cn_aktionsleiste">
 			<span class="cn_label">Optionen für Auswahl:</span>
-			<a class="dn_senden" href="modell-auswahl.jsp" title="Die ausgewählten Flotten versenden..">Flotte(n) versenden</a>
+			<a class="dn_senden" href="javascript:;" title="Flotte(n) vormerken, um sie nach klick auf andere Koordinaten verschicken zu können.">Flotte(n) vormerken</a>
 			<a class="dn_teilen" href="modell-auswahl.jsp" title="Die ausgewählte Flotte aufteilen / neue/weitere Flotte aus dieser abspalten..">Flotte aufteilen</a>
 			<a class="dn_vereinen" href="modell-auswahl.jsp" title="Die ausgewählten Flotten werden zu einer einzigen großen Flotte zusammengefügt">Flotten vereinen</a>
 		</div>
@@ -131,6 +221,15 @@
 						<td>${row.zielX}:${row.zielY}</td>
 						<td>${row.sprungAufladung}</td>
 					</tr>
+					<c:forEach items="${ row.geschwader }" var="geschwader">
+						<tr>
+							<td colspan="4">
+								${ geschwader.anzahl } 
+								${ geschwader.schiffsmodell.bezeichnung }
+								
+							</td>
+						</tr>
+					</c:forEach>
 				</c:forEach>
 			</table>
 		</div>
