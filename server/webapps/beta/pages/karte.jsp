@@ -23,23 +23,6 @@
 		<%
 	}
 	%>
-	
-	$(function()
-	{
-		
-		var d = $("<div/>");
-		d.append( $("<a data='nebula.jsp'>Übersicht</a><span> | </span>") );
-		d.append( $("<a data='karte.jsp' class='cn_aktive'>Karte</a><span> | </span>") );
-		d.append( $("<a data='forschung.jsp'>Meine Immobilien</a><span> | </span>") );
-		d.append( $("<a data='forschung.jsp'>Gebäude bauen</a><span> | </span>") );
-		d.addClass("menuDiv_stage2");
-		$("#menuLeftDiv").append(d);
-		d.children("a").attr("href","#");
-		d.hide();
-	//		d.show();
-		d.slideDown();
-	});
-
 </script>
 <script src="../js/pages/karte.js"></script>
 <div id="mapBox">

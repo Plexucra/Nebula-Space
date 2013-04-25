@@ -1,24 +1,5 @@
-<%@page import="org.colony.lib.S"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="include/page-header.jsp" %>
-<script>
-	<%
-	request.setAttribute("s", new S(request));
-	%>
-	$(function()
-	{
-		$("#menuDiv a[data='nebula']").addClass("cn_aktive");
-		var d = $("<div/>");
-		d.append( $("<a href='nebula.jsp'>Nebula</a><span> | </span>") );
-		d.append( $("<a href='nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>") );
-		d.append( $("<a href='nebula-flotten.jsp' class='cn_aktive'>Meine Flotten</a>") );
-		d.addClass("menuDiv_stage2");
-		$("#menuLeftDiv").append(d);
-		d.hide();
-		d.slideDown();
-	});
-</script>
-
 <div>
 	<h3>Flottenübersicht:</h3>
 	<%

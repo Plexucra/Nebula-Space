@@ -62,33 +62,57 @@
 			{
 				update_tickTimeInfo(<%= timeToNextTick %>)
 			});
-			
-	
+
 			$(function()
 			{
-				var d = $("<div/>");
-				d.append( $("<a data='nebula' href='nebula.jsp'>Galaxie</a>") );
-				d.append( $("<a data='karte' href='karte.jsp'>Kolonie</a>") );
-				d.append( $("<a data='forschung' href='forschung.jsp'>Forschung</a>") );
-				d.append( $("<a data='handel' href='handel.jsp'>Handel</a>") );
-				d.append( $("<a data='statistik' href='statistik.jsp'>Statistik</a>") );
-				d.append( $("<a data='einstellung' href='einstellung.jsp'>Einstellung</a>") );
-				d.append( $("<div/>"));
-				d.children("div").html($("<span>Konto: </span><%= Formater.formatCurrency(ContextListener.getService().getNutzer(session).getKontostand()) %> <%=
-				Formater.formatDiffCurrency( ContextListener.getService().getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %><span> / h</span>"));
-				d.children("div").css("float","right");
-				
-				d.addClass("menuDiv_stage1");
-				$("#menuLeftDiv").append(d);
-
-
-
+				$("#menuDiv .menuDiv_stage2").hide();
+// 				$("#menuDiv #menuPunkt1${ns}").addClass("cn_aktive");
+				$("#menuDiv #menuPunkt2${ns}").addClass("cn_aktive").parent().slideDown();
+				var t_id = $("#menuDiv #menuPunkt2${ns}").addClass("cn_aktive").parent().attr("ref");
+				$("#menuDiv #"+t_id).addClass("cn_aktive")
 			});
 		</script>
 		<div id="menuDiv">
 		<table>
 			<tr>
 			<td id="menuLeftDiv">
+				<div>
+					<div>
+						<div style="float:right">
+							<span>Konto: </span>
+							<%= Formater.formatCurrency(ContextListener.getService().getNutzer(session).getKontostand()) %> 
+							<%= Formater.formatDiffCurrency( ContextListener.getService().getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %>
+							<span> / h</span>
+						</div>
+						<div class="menuDiv_stage1">
+							<a id="menuPunkt1_pages_nachrichten" href='nachrichten.jsp'>Nachrichten</a>
+							<a id="menuPunkt1_pages_nebula" href='nebula.jsp'>Galaxie</a>
+							<a id="menuPunkt1_pages_karte" href='karte.jsp'>Kolonie</a>
+							<a id="menuPunkt1_pages_forschung" href='forschung.jsp'>Forschung</a>
+							<a id="menuPunkt1_pages_handel" href='handel.jsp'>Handel</a>
+							<a id="menuPunkt1_pages_statistik" href='statistik.jsp'>Statistik</a>
+							<a id="menuPunkt1_pages_einstellungen" href='einstellungen.jsp'>Einstellungen</a>
+						</div>
+						<div class="menuDiv_stage2" ref="menuPunkt1_pages_karte">
+							<a id="menuPunkt2_pages_karte" href='karte.jsp' >Karte</a><span> | </span>
+							<a id="menuPunkt2_pages_immobilien" href='immobilien.jsp'>Meine Immobilien</a><span> | </span>
+							<a id="menuPunkt2_pages_modell-auswahl" href='modell-auswahl.jsp'>Bauplan auswählen</a><span> | </span>
+						</div>
+						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nebula">
+							<a id="menuPunkt2_pages_nebula" href='nebula.jsp'>Nebula</a><span> | </span>
+							<a id="menuPunkt2_pages_nebula_" href='nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>
+							<a id="menuPunkt2_pages_nebula-flotten" href='nebula-flotten.jsp'>Meine Flotten</a>
+						</div>
+						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nachrichten">
+							<a id="menuPunkt2_pages_nachrichten" href='nachrichten.jsp'>Neuigkeiten</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-posteingang" href='nachrichten-posteingang.jsp'>Posteingang</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-postausgang" href='nachrichten-postausgang.jsp'>Postausgang</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-neue-nachricht" href='nachrichten-neue-nachricht.jsp'>Neue Nachricht</a><span> | </span>
+						</div>
+
+
+					</div>
+				</div>
 			</td>
 			</tr>
 		</table>

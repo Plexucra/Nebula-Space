@@ -1,35 +1,9 @@
+<%@ page pageEncoding="UTF-8"%>
 <%@page import="org.colony.data.Produkt"%>
-<%@ include file="include/page-header.jsp" %>
-<script src="../js/pages/modell-auswahl.js"></script>
-
-
-
-
 <%@page import="org.colony.data.Typ"%>
 <%@page import="org.colony.data.Modell"%>
-<%@ page pageEncoding="UTF-8"%>
+<%@ include file="include/page-header.jsp" %>
 <%@page import="org.colony.lib.ContextListener"%>
-<% request.setAttribute("ns", request.getServletPath().replaceAll("/", "_").replaceAll("\\.jsp", "")); %>
-	<script>
-	$(function()
-	{
-// 		$("._ajax_modellAuswahlDialog a").click(function(e)
-// 		{
-<%-- 			$.getJSON('../json/saveGebaeude.jsp?modellId='+$(this).attr("data_id")+'&x=<%= request.getParameter("x") %>&y=<%= request.getParameter("y") %>', function(data2)  --%>
-// 			{
-// 				if(data2 && data2["errorMessage"])
-// 				{
-// 					alert(data2["errorMessage"]);
-// 				}
-// 				else
-// 				{
-// 					draw();
-// 					$( ".cn_dialogMessage" ).dialog( "close" );
-// 				}
-// 			});
-// 		});
-	});
-	</script>
 	<style>
 	.dn_modellAuswahlTyp td
 	{

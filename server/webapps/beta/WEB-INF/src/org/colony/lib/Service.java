@@ -485,19 +485,7 @@ public class Service
 		rs = ps.executeQuery();
 		if(rs != null && rs.next())
 		{
-			Gebaeude g = new Gebaeude();
-			g.setId(rs.getInt("id"));
-			g.setAlter(rs.getInt("alter"));
-			g.setAusgaben(rs.getInt("ausgaben"));
-			g.setAuslastung(rs.getInt("auslastung"));
-			g.setBesitzer(getNutzer(rs.getInt("besitzerNutzerId")));
-			g.setEffizienz(rs.getFloat("effizienz"));
-			g.setEinnahmen(rs.getInt("einnahmen"));
-			g.setGrundstueckId(rs.getInt("grundstueckId"));
-			g.setGrundstueckX(rs.getInt("grundstueckX"));
-			g.setGrundstueckY(rs.getInt("grundstueckY"));
-			g.setModell(getModell(rs.getInt("modellId")));
-			g.setPlanet(getPlanet(rs.getInt("planetId")));
+			Gebaeude g = new Gebaeude(rs);
 			results = g;
 		}
 		if(rs!=null) rs.close();
@@ -533,19 +521,7 @@ public class Service
 			rs = ps.executeQuery();
 			while(rs != null && rs.next())
 			{
-				Gebaeude g = new Gebaeude();
-				g.setId(rs.getInt("id"));
-				g.setAlter(rs.getInt("alter"));
-				g.setAusgaben(rs.getInt("ausgaben"));
-				g.setAuslastung(rs.getInt("auslastung"));
-				g.setBesitzer(getNutzer(rs.getInt("besitzerNutzerId")));
-				g.setEffizienz(rs.getFloat("effizienz"));
-				g.setEinnahmen(rs.getInt("einnahmen"));
-				g.setGrundstueckId(rs.getInt("grundstueckId"));
-				g.setGrundstueckX(rs.getInt("grundstueckX"));
-				g.setGrundstueckY(rs.getInt("grundstueckY"));
-				g.setModell(getModell(rs.getInt("modellId")));
-				g.setPlanet(getPlanet(rs.getInt("planetId")));
+				Gebaeude g = new Gebaeude(rs);
 				results.add(g);
 			}
 			if(rs!=null) rs.close();
@@ -582,19 +558,7 @@ public class Service
 			rs = ps.executeQuery();
 			if (rs != null && rs.next())
 			{
-				g = new Gebaeude();
-				g.setId(rs.getInt("id"));
-				g.setAlter(rs.getInt("alter"));
-				g.setAusgaben(rs.getInt("ausgaben"));
-				g.setAuslastung(rs.getInt("auslastung"));
-				g.setBesitzer(getNutzer(rs.getInt("besitzerNutzerId")));
-				g.setEffizienz(rs.getFloat("effizienz"));
-				g.setEinnahmen(rs.getInt("einnahmen"));
-				g.setGrundstueckId(rs.getInt("grundstueckId"));
-				g.setGrundstueckX(rs.getInt("grundstueckX"));
-				g.setGrundstueckY(rs.getInt("grundstueckY"));
-				g.setModell(getModell(rs.getInt("modellId")));
-				g.setPlanet(getPlanet(rs.getInt("planetId")));
+				g = new Gebaeude(rs);
 				rs.close();
 			}
 			ps.close();
@@ -934,8 +898,11 @@ public class Service
 			ps.close();
 			
 			ResultSet rs = c.prepareStatement("select * from flotte where id = LAST_INSERT_ID()").executeQuery();
-			result = new Flotte(rs);
-			
+			if(rs!=null && rs.next())
+			{
+				result = new Flotte(rs);
+				rs.close();
+			}
 			c.commit();
 		}
 		catch(Exception ex)
@@ -1114,26 +1081,49 @@ public class Service
 			rs = ps.executeQuery();
 			while(rs != null && rs.next())
 			{
-				Gebaeude g = new Gebaeude();
-				g.setId(rs.getInt("id"));
-				g.setAlter(rs.getInt("alter"));
-				g.setAusgaben(rs.getInt("ausgaben"));
-				g.setAuslastung(rs.getInt("auslastung"));
-				g.setBesitzer(getNutzer(rs.getInt("besitzerNutzerId")));
-				g.setEffizienz(rs.getFloat("effizienz"));
-				g.setEinnahmen(rs.getInt("einnahmen"));
-				g.setGrundstueckId(rs.getInt("grundstueckId"));
-				g.setGrundstueckX(rs.getInt("grundstueckX"));
-				g.setGrundstueckY(rs.getInt("grundstueckY"));
-				g.setModell(getModell(rs.getInt("modellId")));
-				g.setPlanet(getPlanet(rs.getInt("planetId")));
+				Gebaeude g = new Gebaeude(rs);
 				results.add(g);
 			}
 			if(rs!=null) rs.close();
 			ps.close();
 		}
 		finally { c.close(); }
-		return results;	}
+		return results;	
+	}
+	public List<Gebaeude> getNutzerGebaeude(Nutzer n) throws Exception
+	{
+		List<Gebaeude> results = new ArrayList<Gebaeude>();
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			PreparedStatement ps;
+			ResultSet rs;
+			StringBuffer sb = new StringBuffer(200);
+			sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
+			sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
+			sb.append("	grundstueck.x as grundstueckX, ");
+			sb.append("	grundstueck.y as grundstueckY, ");
+			sb.append("	gebaeude.modellId as modellId, ");
+			sb.append("	grundstueck.planetId as planetId ");
+			sb.append("	from gebaeude ");
+			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
+			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
+			sb.append("	where gebaeude.besitzerNutzerId = ? order (cast(einnahmen AS SIGNED)-cast(ausgaben AS SIGNED)) ");
+			ps = c.prepareStatement(sb.toString());
+			ps.setInt(1, n.getId());
+
+			rs = ps.executeQuery();
+			while(rs != null && rs.next())
+			{
+				Gebaeude g = new Gebaeude(rs);
+				results.add(g);
+			}
+			if(rs!=null) rs.close();
+			ps.close();
+		}
+		finally { c.close(); }
+		return results;	
+	}
 
 	public float getEffizienz(Gebaeude g, List<Gebaeude> relevanteGebs) throws Exception
 	{
