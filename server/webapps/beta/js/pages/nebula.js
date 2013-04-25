@@ -16,7 +16,7 @@ function getPosition(e)
 
 $(function()
 {
-	draw();
+//	draw();
 	$.get('../ajax/posDetail.jsp?x='+selPosX+'&y='+selPosY+'&selFlotteId='+selFlotteId, function(data2) 
 	{
 		$("."+ns+" .sidebar").html(data2);
@@ -52,33 +52,46 @@ function formatDiffValue(s)
 var vX;
 var vY;
 var grundstuecke;
-var zoom = 33;
-var vBorder = 4;
+var zoom = 20;
+var vBorder = 2;
 
+var imageObj = new Image();
+imageObj.src = '../css/default_thema/images/nebula.jpg';
+imageObj.onload = function() 
+{
+	draw();
+};
 function draw()
 {
+	
 	vX = selPosX-14;
 	vY = selPosY-7;
 	var canvas = document.getElementById('map');
 	if(canvas.getContext)
 	{
+		var ctx = canvas.getContext("2d");
+		ctx.clearRect(0, 0, 1200, 1200);
+		
+//		3260 2487
+//		css/default_thema/images/nebula.jpg
+		ctx.drawImage(imageObj, -1500-(vX*zoom), -1500-(vY*zoom));
 		$.getJSON('../json/getFlotten.jsp?x='+selPosX+'&y='+selPosY, function(data) 
 		{
-			var ctx = canvas.getContext("2d");
-			ctx.clearRect(0, 0, 1200, 1200);
+//			alert(vX*zoom);
+			
 			ctx.fillStyle = "rgba(0, 0, 200, 1)";
 			ctx.beginPath();
 			ctx.lineWidth=0.5;
 			var tB=Math.round(vBorder/2);
 //			Gitternetz zeichnen
 			ctx.strokeStyle = "rgba(200, 200, 250, 0.5)";
-			for(var i=0; i<38; i++)
-			{
-				ctx.moveTo(i*zoom-tB,0);
-				ctx.lineTo(i*zoom-tB,1200);
-				ctx.moveTo(0,i*zoom-tB);
-				ctx.lineTo(1200,i*zoom-tB);
-			}
+//			for(var i=0; i<38; i++)
+//			{
+//				ctx.moveTo(i*zoom-tB,0);
+//				ctx.lineTo(i*zoom-tB,1200);
+//				ctx.moveTo(0,i*zoom-tB);
+//				ctx.lineTo(1200,i*zoom-tB);
+//			}
 			ctx.closePath();
 			ctx.stroke();
 			grundstuecke = data;
@@ -88,26 +101,40 @@ function draw()
 				ctx.lineWidth=2;
 				ctx.strokeStyle = "rgba(200, 200, 250, 0.9)";
 				ctx.beginPath();
-				ctx.arc( ( (selPosX-vX)*zoom+Math.round(zoom/2) )-2, ( (selPosY-vY)*zoom+Math.round(zoom/2) )-2, 9, 0, Math.PI * 2, true);
+				ctx.arc( ( (selPosX-vX)*zoom+Math.round(zoom/2) )-1, ( (selPosY-vY)*zoom+Math.round(zoom/2) )-1, 7, 0, Math.PI * 2, true);
 				ctx.closePath();
 				ctx.stroke();
 			}
 			for(var i in data)
 			{
-				if(data[i].besitzerNutzerId==userId)
+				var t_x = (data[i].x-vX)*zoom+Math.round(zoom/2)-1;
+				var t_y = (data[i].y-vY)*zoom+Math.round(zoom/2)-1;
+				var grd=ctx.createRadialGradient(t_x,t_y,5,t_x,t_y,12);
+
+				if(data[i].besitzerNutzerId <= 0)
 				{
-//					Eigene Gebaeude markieren
-					ctx.lineWidth=2;
-					ctx.fillStyle = "rgba(250, 250, 250, 0.5)";
+					ctx.fillStyle = "rgba(255, 155, 55, 1)";
 					ctx.beginPath();
-					ctx.arc( ( (data[i].x-vX)*zoom+Math.round(zoom/2) )-2, ( (data[i].y-vY)*zoom+Math.round(zoom/2) )-2, 5, 0, Math.PI * 2, true);
+					ctx.arc( ( (data[i].x-vX)*zoom+Math.round(zoom/2) )-1, ( (data[i].y-vY)*zoom+Math.round(zoom/2) )-1, 3, 0, Math.PI * 2, true);
 					ctx.closePath();
 					ctx.fill();
 				}
-				ctx.fillStyle = "rgba(0, 150, 250, 0.3)";
-				if(data[i].id < 0)
-					ctx.fillStyle = "rgba(100, 50, 50, 0.5)";
-				ctx.fillRect ( (data[i].x-vX)*zoom, (data[i].y-vY)*zoom, zoom-vBorder, zoom-vBorder);
+				else if(data[i].besitzerNutzerId==userId)
+				{
+//					Eigene Gebaeude markieren
+					grd.addColorStop(0,"rgba(0, 255, 10, 0.5)");
+					grd.addColorStop(1,"rgba(0, 255, 10, 0.0)");
+					ctx.fillStyle = grd;
+					ctx.fillRect ( (data[i].x-vX)*zoom-2, (data[i].y-vY)*zoom-2, zoom-vBorder+4, zoom-vBorder+4);
+				}
+				else
+				{
+
+					grd.addColorStop(0,"rgba(0, 150, 250, 0.5)");
+					grd.addColorStop(1,"rgba(0, 150, 250, 0.0)");
+					ctx.fillStyle = grd;
+					ctx.fillRect ( (data[i].x-vX)*zoom-2, (data[i].y-vY)*zoom-2, zoom-vBorder+4, zoom-vBorder+4);
+				}				
 
 			}
 		});

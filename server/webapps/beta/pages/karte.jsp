@@ -23,6 +23,8 @@
 		<%
 	}
 	%>
+	selPosX = selGrundstueckX;
+	selPosY = selGrundstueckY;
 </script>
 <script src="../js/pages/karte.js"></script>
 <div id="mapBox">
