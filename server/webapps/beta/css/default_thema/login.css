@@ -23,3 +23,28 @@
 	background-image: url("images/header02.jpg");
 	background-repeat: no-repeat;
 }
+.planetInfo
+{
+	float:right;
+	width:700px;
+}
+
+.planetInfo img.cn_left
+{
+	width: 200px;
+	margin:40px;
+	margin-left:0px;
+	margin-top:0px;
+	float:left;
+	border:1px solid white;
+}
+
+.planetInfo img.cn_right
+{
+	width: 240px;
+	margin:40px;
+	margin-right:0px;
+	margin-bottom:0px;
+	float:right;
+	border:1px solid white;
+}

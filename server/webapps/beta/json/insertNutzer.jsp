@@ -11,6 +11,8 @@ try
 	Nutzer nutzer = new Nutzer();
 	nutzer.setAlias(request.getParameter("alias"));
 	nutzer.setKey(request.getParameter("key"));
+	nutzer.setHeimatPlanetId(Integer.parseInt(request.getParameter("planetId")));
+	
 	ContextListener.getService().insertNutzer(nutzer);
 	session.setAttribute("userId", ContextListener.getService().getNutzerByKey(request.getParameter("key")).getId());
 	out.println("{\"success\":true}");

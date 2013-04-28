@@ -653,10 +653,10 @@ public class Service
 			rs = ps.executeQuery();
 			while (rs != null && rs.next())
 			{
-				Planet p = new Planet();
-				p.setId(rs.getInt("id"));
-				p.setX(rs.getInt("x"));
-				p.setY(rs.getInt("y"));
+				Planet p = new Planet(rs);
+//				p.setId(rs.getInt("id"));
+//				p.setX(rs.getInt("x"));
+//				p.setY(rs.getInt("y"));
 				planeten.put(p.getId(),p);
 			}
 			rs.close();
@@ -847,21 +847,21 @@ public class Service
 		{
 			c = DbEngine.getConnection();
 			PreparedStatement ps;
-			
-			int planetId = 0;
-			ps = c.prepareStatement("SELECT count(heimatPlanetId) as anzahlNutzer, heimatPlanetId FROM nutzer group by heimatPlanetId order by anzahlNutzer limit 1");
-			ResultSet rs = ps.executeQuery();
-			if(rs!=null && rs.next())
-			{
-				planetId = rs.getInt("heimatPlanetId");
-				rs.close();
-			}
-			ps.close();
+//			
+//			int planetId = 0;
+//			ps = c.prepareStatement("SELECT count(heimatPlanetId) as anzahlNutzer, heimatPlanetId FROM nutzer group by heimatPlanetId order by anzahlNutzer limit 1");
+//			ResultSet rs = ps.executeQuery();
+//			if(rs!=null && rs.next())
+//			{
+//				planetId = rs.getInt("heimatPlanetId");
+//				rs.close();
+//			}
+//			ps.close();
 			
 			ps = c.prepareStatement("insert into nutzer (`key`,`alias`,heimatPlanetId) values (?,?,?)");
 			ps.setString(1, nutzer.getKey());
 			ps.setString(2, nutzer.getAlias());
-			ps.setInt(3, planetId);
+			ps.setInt(3, nutzer.getHeimatPlanetId());
 			ps.executeUpdate();
 			ps.close();
 			
@@ -869,7 +869,7 @@ public class Service
 			loadNutzer(c);
 
 			//Damit man stehts was zum anbauen hat..
-			if(getGebaeude(getPlanet(planetId), 0, 0, c)==null)
+			if(getGebaeude(getPlanet(nutzer.getHeimatPlanetId()), 0, 0, c)==null)
 				insertGebaeude(getNutzerByKey(nutzer.getKey()), 0, 0, 1);
 		}
 		catch(Exception ex)

@@ -31,7 +31,8 @@
 ._pages_nebula canvas
 {
 	border: 1px solid #ddd;
-	background-image: url("images/map-background.png");
+	background-color: black;
+/* 	background-image: url("images/map-background.png"); */
 }
 ._pages_nebula .sidebar h3
 {

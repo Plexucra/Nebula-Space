@@ -56,7 +56,7 @@ var zoom = 20;
 var vBorder = 2;
 
 var imageObj = new Image();
-imageObj.src = '../css/default_thema/images/nebula.jpg';
+imageObj.src = '../css/default_thema/images/nebula.png';
 imageObj.onload = function() 
 {
 	draw();
