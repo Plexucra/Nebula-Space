@@ -13,6 +13,7 @@ public class Schiffsmodell
 	int schildWaffenPunkte;
 	int panzerWaffenPunkte;
 	int sprungzeit;
+	int kadenz;
 	public Schiffsmodell(ResultSet rs) throws SQLException
 	{
 		setId(rs.getInt("id"));
@@ -23,6 +24,7 @@ public class Schiffsmodell
 		setSchildWaffenPunkte(rs.getInt("schildWaffenPunkte"));
 		setPanzerWaffenPunkte(rs.getInt("panzerWaffenPunkte"));
 		setSprungzeit(rs.getInt("sprungzeit"));
+		setKadenz(rs.getInt("kadenz"));
 	}
 	public int getId()
 	{
@@ -87,5 +89,13 @@ public class Schiffsmodell
 	public void setSprungzeit(int sprungzeit)
 	{
 		this.sprungzeit = sprungzeit;
+	}
+	public int getKadenz()
+	{
+		return kadenz;
+	}
+	public void setKadenz(int kadenz)
+	{
+		this.kadenz = kadenz;
 	}
 }

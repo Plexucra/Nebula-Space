@@ -1,4 +1,3 @@
-<%@page import="org.colony.lib.S"%>
 <%@page import="org.colony.lib.Formater"%>
 <%@page import="java.text.NumberFormat"%>
 <%@ include file="/pages/include/init.jsp" %>
@@ -6,17 +5,11 @@
 <%@ page pageEncoding="UTF-8"%><!doctype html>
 <html lang="de">
 <head>
-	<%
-		S s = new S(request);
-		request.setAttribute("s", s);
-	%>
-	<% request.setAttribute("ns", request.getServletPath().replaceAll("/", "_").replaceAll("\\.jsp", "")); %>
 	<meta charset="utf-8">
-	<title>Colony 0.1</title>
-	<link href="../css/default_thema/colony.css" rel="stylesheet">
-	<script src="../js/jquery-1.9.1.js"></script>
-	<script src="../js/jquery-ui-1.10.1.custom.js"></script>
-<!-- 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" /> -->
+	<title>Nebula-Space.de</title>
+	<link href="${up}/css/default_thema/colony.css" rel="stylesheet">
+	<script src="${up}/js/jquery-1.9.1.js"></script>
+	<script src="${up}/js/jquery-ui-1.10.1.custom.js"></script>
 	<script>
 		var ns = "${ns}";
 		var tickDuration = <%=ContextListener.getTicker().getDuration()%>;
@@ -90,7 +83,7 @@
 							<a id="menuPunkt1_pages_karte" href='karte.jsp'>Kolonie</a>
 							<a id="menuPunkt1_pages_forschung" href='forschung.jsp'>Forschung</a>
 							<a id="menuPunkt1_pages_handel" href='handel.jsp'>Handel</a>
-							<a id="menuPunkt1_pages_statistik" href='statistik.jsp'>Statistik</a>
+							<a id="menuPunkt1_pages_modules_statistik" href='${up}/pages/modules/statistik/nutzer.jsp'>Statistik</a>
 							<a id="menuPunkt1_pages_einstellungen" href='einstellungen.jsp'>Einstellungen</a>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_karte">
@@ -108,6 +101,12 @@
 							<a id="menuPunkt2_pages_nachrichten-posteingang" href='nachrichten-posteingang.jsp'>Posteingang</a><span> | </span>
 							<a id="menuPunkt2_pages_nachrichten-postausgang" href='nachrichten-postausgang.jsp'>Postausgang</a><span> | </span>
 							<a id="menuPunkt2_pages_nachrichten-neue-nachricht" href='nachrichten-neue-nachricht.jsp'>Neue Nachricht</a><span> | </span>
+						</div>
+						
+						<div class="menuDiv_stage2" ref="menuPunkt1_pages_modules_statistik">
+							<a id="menuPunkt2_pages_modules_statistik_nutzer" href='${up}/pages/modules/statistik/nutzer.jsp'>Firmen-Statistik</a><span> | </span>
+							<a id="menuPunkt2_pages_modules_statistik_schlachtensimulator" href='${up}/pages/modules/statistik/schlachtensimulator.jsp'>Schlachtensimulator</a><span> | </span>
+						
 						</div>
 
 

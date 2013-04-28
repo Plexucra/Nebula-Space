@@ -1,22 +1,44 @@
 package org.colony.data;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.colony.lib.ContextListener;
 
-public class Geschwader
+public class Geschwader implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	int id;
 	int anzahl;
 	int flotteId;
 	int schiffsmodellId;
+
+
+	public Geschwader()
+	{
+	}
 	public Geschwader(ResultSet rs) throws SQLException
 	{
 		setId(rs.getInt("id"));
 		setAnzahl(rs.getInt("anzahl"));
 		setFlotteId(rs.getInt("flotteId"));
 		setSchiffsmodellId(rs.getInt("schiffsmodellId"));
+	}
+	public Geschwader(int anzahl, int schiffsmodellId)
+	{
+		this.anzahl = anzahl;
+		this.schiffsmodellId = schiffsmodellId;
+	}
+
+	public Geschwader clone()
+	{
+		Geschwader result = new Geschwader();
+		result.setId(id);
+		result.setAnzahl(anzahl);
+		result.setFlotteId(flotteId);
+		result.setSchiffsmodellId(schiffsmodellId);
+		return result;
 	}
 	public Schiffsmodell getSchiffsmodell()
 	{

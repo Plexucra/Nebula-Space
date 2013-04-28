@@ -1,4 +1,5 @@
 ﻿@import url("default-thema/jquery-ui-1.10.2.custom.min.css");
+@import url("pages.css");
 @import url("login.css");
 @import url("karte.css");
 @import url("nebula.css");
@@ -75,6 +76,12 @@ td, th
 {
 	vertical-align: top;
 }
+
+div.ui-state-error
+{
+	padding:10px;
+}
+
 .loginForm td
 {
 	vertical-align: middle;

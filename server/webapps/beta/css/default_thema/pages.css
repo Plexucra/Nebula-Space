@@ -1,0 +1,21 @@
+._pages_modules_statistik_schlachtensimulator-ajax table
+{
+/* 	padding-right:80px; */
+}
+
+._pages_modules_statistik_schlachtensimulator-ajax table.dn_simulationsergebnis  td,
+._pages_modules_statistik_schlachtensimulator-ajax table.dn_simulationsergebnis  th
+{
+	border: 1px solid white;
+	padding:5px;
+}
+._pages_modules_statistik_schlachtensimulator-ajax table.dn_simulationsergebnis
+{
+	border-collapse: collapse;
+}
+
+._pages_modules_statistik_schlachtensimulator-ajax div.dn_simulationsergebnis
+{
+	max-width: 1200;
+	overflow: auto;
+}
