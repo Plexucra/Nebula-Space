@@ -1,30 +1,34 @@
 package org.colony.data;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.colony.service.SchiffsmodellService;
 
 public class Schiffsmodell
 {
 	int id;
 	int fabrikModellId;
-	int schildPunkte;
-	int panzerPunkte;
 	String bezeichnung;
-	int schildWaffenPunkte;
-	int panzerWaffenPunkte;
 	int sprungzeit;
-	int kadenz;
-	public Schiffsmodell(ResultSet rs) throws SQLException
+	int masse;
+	Map<Integer,Float> bonusListe = new HashMap<Integer,Float>();
+	public Schiffsmodell(Connection c, ResultSet rs) throws SQLException
 	{
 		setId(rs.getInt("id"));
 		setFabrikModellId(rs.getInt("fabrikModellId"));
-		setSchildPunkte(rs.getInt("schildPunkte"));
-		setPanzerPunkte(rs.getInt("panzerPunkte"));
 		setBezeichnung(rs.getString("bezeichnung"));
-		setSchildWaffenPunkte(rs.getInt("schildWaffenPunkte"));
-		setPanzerWaffenPunkte(rs.getInt("panzerWaffenPunkte"));
 		setSprungzeit(rs.getInt("sprungzeit"));
-		setKadenz(rs.getInt("kadenz"));
+		setMasse(rs.getInt("masse"));
+		bonusListe = SchiffsmodellService.getBonusListe(c, this);
+	}
+	public float getAngriffsbonus(Schiffsmodell m)
+	{
+		if(getBonusListe().get(m.getId())==null) return 0f;
+		return getBonusListe().get(m.getId());
 	}
 	public int getId()
 	{
@@ -42,22 +46,6 @@ public class Schiffsmodell
 	{
 		this.fabrikModellId = fabrikModellId;
 	}
-	public int getSchildPunkte()
-	{
-		return schildPunkte;
-	}
-	public void setSchildPunkte(int schildPunkte)
-	{
-		this.schildPunkte = schildPunkte;
-	}
-	public int getPanzerPunkte()
-	{
-		return panzerPunkte;
-	}
-	public void setPanzerPunkte(int panzerPunkte)
-	{
-		this.panzerPunkte = panzerPunkte;
-	}
 	public String getBezeichnung()
 	{
 		return bezeichnung;
@@ -66,22 +54,7 @@ public class Schiffsmodell
 	{
 		this.bezeichnung = bezeichnung;
 	}
-	public int getSchildWaffenPunkte()
-	{
-		return schildWaffenPunkte;
-	}
-	public void setSchildWaffenPunkte(int schildWaffenPunkte)
-	{
-		this.schildWaffenPunkte = schildWaffenPunkte;
-	}
-	public int getPanzerWaffenPunkte()
-	{
-		return panzerWaffenPunkte;
-	}
-	public void setPanzerWaffenPunkte(int panzerWaffenPunkte)
-	{
-		this.panzerWaffenPunkte = panzerWaffenPunkte;
-	}
+
 	public int getSprungzeit()
 	{
 		return sprungzeit;
@@ -90,12 +63,20 @@ public class Schiffsmodell
 	{
 		this.sprungzeit = sprungzeit;
 	}
-	public int getKadenz()
+	public int getMasse()
 	{
-		return kadenz;
+		return masse;
 	}
-	public void setKadenz(int kadenz)
+	public void setMasse(int masse)
 	{
-		this.kadenz = kadenz;
+		this.masse = masse;
+	}
+	public Map<Integer, Float> getBonusListe()
+	{
+		return bonusListe;
+	}
+	public void setBonusListe(Map<Integer, Float> bonusListe)
+	{
+		this.bonusListe = bonusListe;
 	}
 }

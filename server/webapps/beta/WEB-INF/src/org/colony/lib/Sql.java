@@ -14,6 +14,7 @@ public class Sql
 			map = new HashMap<String,String>();
 			map.put("PlanetService.getPlaneten", "select * from planet");
 			map.put("PlanetService.getAnzahlNutzer", "SELECT count(heimatPlanetId) as anzahlNutzer FROM nutzer where heimatPlanetId = ?");
+			map.put("SchiffsmodellService.getBonusListe","select bSchiffsmodellId as schiffsmodellId, bonus from schiffsmodellbonus where aSchiffsmodellId = ?");
 		}
 		return map;
 	}

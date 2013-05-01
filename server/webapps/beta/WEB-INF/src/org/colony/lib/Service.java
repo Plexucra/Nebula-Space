@@ -576,7 +576,7 @@ public class Service
 		rs = ps.executeQuery();
 		while (rs != null && rs.next())
 		{
-			Schiffsmodell p = new Schiffsmodell(rs);
+			Schiffsmodell p = new Schiffsmodell(c, rs);
 			schiffsmodelle.put(p.getId(),p);
 		}
 		rs.close();
