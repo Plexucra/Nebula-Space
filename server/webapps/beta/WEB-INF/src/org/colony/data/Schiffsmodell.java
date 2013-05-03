@@ -27,7 +27,7 @@ public class Schiffsmodell
 	}
 	public float getAngriffsbonus(Schiffsmodell m)
 	{
-		if(getBonusListe().get(m.getId())==null) return 0f;
+		if(getBonusListe().get(m.getId())==null) return 1f;
 		return getBonusListe().get(m.getId());
 	}
 	public int getId()

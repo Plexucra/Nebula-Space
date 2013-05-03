@@ -85,13 +85,13 @@
 		g2.setGrundstueckY(s.getInt("y"));
 		g2.setPlanet(s.getNutzer().getHeimatPlanet());
 		List<Gebaeude> gs = s.service().getRelevanteGebaeude(g2);
-		boolean hatNachbarn = false;
+		boolean hatNachbarn = true;
 		
-		if(gs!=null) for(Gebaeude tg : gs)
-		{
-			if( Math.abs(g2.getGrundstueckX()-tg.getGrundstueckX())<2 && Math.abs(g2.getGrundstueckY()-tg.getGrundstueckY())<2)
-				hatNachbarn=true;
-		}
+// 		if(gs!=null) for(Gebaeude tg : gs)
+// 		{
+// 			if( Math.abs(g2.getGrundstueckX()-tg.getGrundstueckX())<2 && Math.abs(g2.getGrundstueckY()-tg.getGrundstueckY())<2)
+// 				hatNachbarn=true;
+// 		}
 		if(hatNachbarn)
 		{
 			Modell bestM = null;

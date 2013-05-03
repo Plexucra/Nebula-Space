@@ -20,7 +20,9 @@ try
 	if(request.getParameter("y")!=null) y = Integer.parseInt(request.getParameter("y"));
 
 	Map<String,String> map = new HashMap<String,String>();
-	ResultSet rs = c.prepareStatement("	SELECT besitzerNutzerId, id, x, y FROM  flotte union select 0, id as id, x, y from planet where (x < "+(x+30)+") and ( x > "+(x-20)+" ) and (y < "+(y+15)+") and ( y > "+(y-8)+" )   ").executeQuery();
+	ResultSet rs = c.prepareStatement(
+			"	SELECT besitzerNutzerId, id, x, y FROM  flotte where (x < "+(x+46)+") and ( x > "+(x-20)+" ) and (y < "+(y+24)+") and ( y > "+(y-8)+" ) "+
+			"union select 0, id as id, x, y from planet where (x < "+(x+46)+") and ( x > "+(x-20)+" ) and (y < "+(y+24)+") and ( y > "+(y-8)+" )  ").executeQuery();
 	
 	StringBuffer sb = new StringBuffer(5000);
 	if(rs!=null)

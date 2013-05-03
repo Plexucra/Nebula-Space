@@ -22,6 +22,8 @@ import org.colony.data.Planet;
 import org.colony.data.Produkt;
 import org.colony.data.Schiffsmodell;
 import org.colony.data.Typ;
+import org.colony.service.FlottenService;
+import org.colony.service.SchlachtService;
 
 public class Service
 {
@@ -81,6 +83,8 @@ public class Service
 			}
 		    statement.executeBatch();
 		    statement.close();
+		    
+		    SchlachtService.updateSchlachten(c);
 
 			
 
@@ -109,15 +113,15 @@ public class Service
 					}
 					if(g.getModell().getTyp().getId() == 7 && g.getAuslastung()==g.getModell().getKapazitaet())
 					{
-						List<Flotte> hFlotten = getHeimatFlotten(g.getBesitzer(),c);
+						List<Flotte> hFlotten = FlottenService.getHeimatFlotten(g.getBesitzer(),c);
 						Flotte f = null; 
 						if(hFlotten!=null && hFlotten.size()>0) f = hFlotten.get(0);
-						else f = insertHeimatflotte(g.getBesitzer());
+						else f = insertHeimatflotte(c, g.getBesitzer());
 						Schiffsmodell neuesSchiff = null;
 						for(Schiffsmodell sm : getSchiffsmodelle().values())
 							if(sm.getFabrikModellId() == g.getModell().getId())
 								neuesSchiff = sm;
-						insertFlottenschiff(f,neuesSchiff);
+						insertFlottenschiff(c, f,neuesSchiff);
 
 					}
 				}
@@ -279,135 +283,12 @@ public class Service
 	}
 
 
-	public List<Flotte> getFlotten(int x, int y) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			return getFlotten(x, y, c);
-		}
-		finally { c.close(); }
-	}
-
-	private String generateQsForIn(int numQs)
-	{
-	    StringBuffer items = new StringBuffer(numQs*5);
-	    for (int i = 0; i < numQs; i++) 
-	    {
-	        if (i != 0) items.append(", ");
-	        items.append("?");
-	    }
-	    return items.toString();
-	}
-
-	public List<Flotte> getFlotten(List<Integer> ids, Nutzer nutzer) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			return getFlotten(ids, nutzer, c);
-		}
-		finally { c.close(); }
-	}
-	public List<Flotte> getHeimatFlotten(Nutzer nutzer, Connection c) throws Exception
-	{
-		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ? and x = ? and y = ? ");
-		ps.setInt(1, nutzer.getId());
-		ps.setInt(2, nutzer.getHeimatPlanet().getX());
-		ps.setInt(3, nutzer.getHeimatPlanet().getY());
-		ResultSet rs = ps.executeQuery();
-		while(rs != null && rs.next()) results.add(new Flotte(rs));
-		if(rs!=null) rs.close();
-		ps.close();
-		return results;
-	}
-
-	public List<Flotte> getFlotten(List<Integer> ids, Nutzer nutzer, Connection c) throws Exception
-	{
-		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ? and id in ("+generateQsForIn(ids.size())+")");
-		ps.setInt(1, nutzer.getId());
-		for(int i=0; i<ids.size(); i++)
-			ps.setInt(2+i, ids.get(i));
-		ResultSet rs = ps.executeQuery();
-		while(rs != null && rs.next()) results.add(new Flotte(rs));
-		if(rs!=null) rs.close();
-		ps.close();
-		return results;
-	}
-
-
-	public List<Flotte> getFlotten(Nutzer nutzer) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			return getFlotten(nutzer, c);
-		}
-		finally { c.close(); }
-	}
-
-	public List<Flotte> getFlotten(Nutzer nutzer, Connection c) throws Exception
-	{
-		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where besitzerNutzerId = ?");
-		ps.setInt(1, nutzer.getId());
-		ResultSet rs = ps.executeQuery();
-		while(rs != null && rs.next()) results.add(new Flotte(rs));
-		if(rs!=null) rs.close();
-		ps.close();
-		System.out.println("t1:"+ps.toString());
-		System.out.println("t2:"+results);
-		System.out.println("t3:"+results.size());
-		return results;
-	}
-
-
-	public void updateFlotten(List<Integer> ids, Nutzer nutzer, int zielX, int zielY) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			updateFlotten(ids, nutzer, zielX, zielY, c);
-			c.commit();
-		}
-		finally { c.close(); }
-	}
-
-	public void updateFlotten(List<Integer> ids, Nutzer nutzer, int zielX, int zielY, Connection c) throws Exception
-	{
-		PreparedStatement ps = c.prepareStatement("update flotte set sprungAufladung=30, zielX = ?, zielY = ? where besitzerNutzerId = ? and id in ("+generateQsForIn(ids.size())+")");
-		ps.setInt(1, zielX);
-		ps.setInt(2, zielY);
-		ps.setInt(3, nutzer.getId());
-		for(int i=0; i<ids.size(); i++)
-			ps.setInt(4+i, ids.get(i));
-		System.out.println(ps.toString()+"\n\n x:"+nutzer.getId());
-		ps.executeUpdate();
-		ps.close();
-	}
-
-	
-	public List<Flotte> getFlotten(int x, int y, Connection c) throws Exception
-	{
-		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where x = ? and y = ?");
-		ps.setInt(1, x);
-		ps.setInt(2, y);
-		ResultSet rs = ps.executeQuery();
-		while(rs != null && rs.next()) results.add(new Flotte(rs));
-		if(rs!=null) rs.close();
-		ps.close();
-		return results;
-	}
-	
 	
 	
 	/**
 	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
 	 */
-	public List<Geschwader> getGeschwader(Flotte f) throws Exception
+	public List<Geschwader> getGeschwader(Flotte f) throws SQLException
 	{
 		Connection c = DbEngine.getConnection();
 		try
@@ -420,7 +301,7 @@ public class Service
 	/**
 	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
 	 */
-	public List<Geschwader> getGeschwader(Flotte f, Connection c) throws Exception
+	public List<Geschwader> getGeschwader(Flotte f, Connection c) throws SQLException
 	{
 		List<Geschwader> results = new ArrayList<Geschwader>();
 		PreparedStatement ps = c.prepareStatement("	SELECT * from Geschwader where flotteId = "+f.getId());
@@ -434,7 +315,7 @@ public class Service
 	/**
 	 * Liefert die Flotten welche gerade im Begriff sind zu "springen".
 	 */
-	public List<Flotte> getSprungFlotten(Connection c) throws Exception
+	public List<Flotte> getSprungFlotten(Connection c) throws SQLException
 	{
 		List<Flotte> results = new ArrayList<Flotte>();
 		PreparedStatement ps = c.prepareStatement("	SELECT   id,  besitzerNutzerId, zielX,  zielY, x, y, sprungAufladung from flotte where sprungAufladung = 0 and zielX is not null");
@@ -445,7 +326,7 @@ public class Service
 		return results;
 	}
 
-	public Gebaeude getGebaeude(Planet p, int x, int y) throws Exception
+	public Gebaeude getGebaeude(Planet p, int x, int y) throws SQLException
 	{
 		Connection c = DbEngine.getConnection();
 		try
@@ -454,7 +335,7 @@ public class Service
 		}
 		finally { c.close(); }
 	}
-	public Gebaeude getGebaeude(Planet p, int x, int y, Connection c) throws Exception
+	public Gebaeude getGebaeude(Planet p, int x, int y, Connection c) throws SQLException
 	{
 		Gebaeude results = null;
 		PreparedStatement ps;
@@ -880,75 +761,48 @@ public class Service
 		finally { c.close(); }
 		return null;
 	}
-	synchronized public Flotte insertHeimatflotte(Nutzer n) throws Exception
+	synchronized public Flotte insertHeimatflotte(Connection c, Nutzer n) throws Exception
 	{
 		Flotte result = null;
-		Connection c = null;
-		try
+		PreparedStatement ps = c.prepareStatement("insert into flotte (besitzerNutzerId,zielX,zielY,x,y,sprungAufladung) values (?,?,?,?,?,-1)");
+		ps.setInt(1, n.getId());
+		ps.setInt(2, n.getHeimatPlanet().getX());
+		ps.setInt(3, n.getHeimatPlanet().getY());
+		ps.setInt(4, n.getHeimatPlanet().getX());
+		ps.setInt(5, n.getHeimatPlanet().getY());
+		ps.executeUpdate();
+		ps.close();
+		
+		ResultSet rs = c.prepareStatement("select * from flotte where id = LAST_INSERT_ID()").executeQuery();
+		if(rs!=null && rs.next())
 		{
-			c = DbEngine.getConnection();
-			
-			PreparedStatement ps = c.prepareStatement("insert into flotte (besitzerNutzerId,zielX,zielY,x,y,sprungAufladung) values (?,?,?,?,?,-1)");
-			ps.setInt(1, n.getId());
-			ps.setInt(2, n.getHeimatPlanet().getX());
-			ps.setInt(3, n.getHeimatPlanet().getY());
-			ps.setInt(4, n.getHeimatPlanet().getX());
-			ps.setInt(5, n.getHeimatPlanet().getY());
-			ps.executeUpdate();
-			ps.close();
-			
-			ResultSet rs = c.prepareStatement("select * from flotte where id = LAST_INSERT_ID()").executeQuery();
-			if(rs!=null && rs.next())
-			{
-				result = new Flotte(rs);
-				rs.close();
-			}
-			c.commit();
+			result = new Flotte(rs);
+			rs.close();
 		}
-		catch(Exception ex)
-		{
-			c.rollback();
-			throw ex;
-		}
-		finally { c.close(); }
 		return result;
 	}
-	synchronized public void insertFlottenschiff(Flotte f, Schiffsmodell sm) throws Exception
+	synchronized public void insertFlottenschiff(Connection c, Flotte f, Schiffsmodell sm) throws Exception
 	{
-		Connection c = null;
-		try
+		Geschwader zielGeschwader = null;
+		for(Geschwader g : getGeschwader(f, c))
+			if(g.getSchiffsmodellId() == sm.getId())
+				zielGeschwader = g;
+		
+		if(zielGeschwader == null)
 		{
-			c = DbEngine.getConnection();
-			
-			Geschwader zielGeschwader = null;
-			for(Geschwader g : getGeschwader(f, c))
-				if(g.getSchiffsmodellId() == sm.getId())
-					zielGeschwader = g;
-			
-			if(zielGeschwader == null)
-			{
-				PreparedStatement ps = c.prepareStatement("insert into geschwader (`flotteId`,`schiffsmodellId`,anzahl) values (?,?,1)");
-				ps.setInt(1, f.getId());
-				ps.setInt(2, sm.getId());
-				ps.executeUpdate();
-				ps.close();
-			}
-			else
-			{
-				PreparedStatement ps = c.prepareStatement("update geschwader set anzahl = anzahl+1 where id = ?");
-				ps.setInt(1, zielGeschwader.getId());
-				ps.executeUpdate();
-				ps.close();
-			}
-			
-			c.commit();
+			PreparedStatement ps = c.prepareStatement("insert into geschwader (`flotteId`,`schiffsmodellId`,anzahl) values (?,?,1)");
+			ps.setInt(1, f.getId());
+			ps.setInt(2, sm.getId());
+			ps.executeUpdate();
+			ps.close();
 		}
-		catch(Exception ex)
+		else
 		{
-			c.rollback();
-			throw ex;
+			PreparedStatement ps = c.prepareStatement("update geschwader set anzahl = anzahl+1 where id = ?");
+			ps.setInt(1, zielGeschwader.getId());
+			ps.executeUpdate();
+			ps.close();
 		}
-		finally { c.close(); }
 	}
 
 	public void destroyGebaeude(Nutzer nutzer, int x, int y) throws Exception
@@ -1108,7 +962,7 @@ public class Service
 			sb.append("	from gebaeude ");
 			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
 			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where gebaeude.besitzerNutzerId = ? order (cast(einnahmen AS SIGNED)-cast(ausgaben AS SIGNED)) ");
+			sb.append("	where gebaeude.besitzerNutzerId = ? order by (cast(einnahmen AS SIGNED)-cast(ausgaben AS SIGNED)) ");
 			ps = c.prepareStatement(sb.toString());
 			ps.setInt(1, n.getId());
 

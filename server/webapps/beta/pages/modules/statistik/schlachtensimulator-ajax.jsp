@@ -1,3 +1,4 @@
+<%@page import="org.colony.service.SchlachtService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.colony.data.Geschwader"%>
 <%@page import="java.util.List"%>
@@ -9,66 +10,7 @@
 <%!
 	public List<Geschwader> getUeberlebende(int kampftick, List<Geschwader> angreifer, List<Geschwader> verteidiger)
 	{
-		double schadensbonus =  (kampftick+1d)/10d;
-// 		schadensbonus *= 1+( Math.random()/4 );
-		List<Geschwader> results = new ArrayList<Geschwader>();
-		double verteidigerAnzahl=0;
-		double verteidigerPanzerPunkte=0;
-		double verteidigerSchildPunkte=0;
-		for(Geschwader tg : verteidiger)
-		{
-			verteidigerAnzahl+=tg.getAnzahl();
-			verteidigerPanzerPunkte+=tg.getAnzahl()*tg.getSchiffsmodell().getPanzerPunkte();
-			verteidigerSchildPunkte+=tg.getAnzahl()*tg.getSchiffsmodell().getSchildPunkte();
-		}
-		double angreiferAnzahl=0;
-		double angreiferKadenz=0;
-		double angreiferPanzerWaffenPunkte=0;
-		double angreiferSchildWaffenPunkte=0;
-		for(Geschwader tg : angreifer)
-		{
-			angreiferAnzahl+=tg.getAnzahl();
-			angreiferKadenz+=tg.getAnzahl()*tg.getSchiffsmodell().getKadenz();
-			angreiferPanzerWaffenPunkte+=tg.getAnzahl()*tg.getSchiffsmodell().getPanzerWaffenPunkte();
-			angreiferSchildWaffenPunkte+=tg.getAnzahl()*tg.getSchiffsmodell().getSchildWaffenPunkte();
-		}
-	
-		for(Geschwader tg : verteidiger)
-		{
-			double multi = ((double)(tg.getSchiffsmodell().getPanzerPunkte()*tg.getAnzahl()))/verteidigerPanzerPunkte;
-			double kadenzBonus = 1d + ( (angreiferKadenz/angreiferAnzahl) / ((double)tg.getSchiffsmodell().getPanzerPunkte()) );
-			double schildschaden = multi*kadenzBonus*angreiferSchildWaffenPunkte*schadensbonus;
-			double panzerschaden = multi*kadenzBonus*angreiferPanzerWaffenPunkte*schadensbonus;
-			
-			//Dies besser anders Implementieren:
-			//Gucken wieviele schiffe damit ent-schildet werden könnten
-			//Anschließend schauen wieviel davon zerstört werden könnten (anteilig der durchdringenden Schüsse / anzahl zum rest)
-			schildschaden-=tg.getSchiffsmodell().getSchildPunkte()*tg.getAnzahl();
-			if(schildschaden<0) schildschaden = 0; //besser auskommentieren..
-			panzerschaden+=schildschaden;
-// 			if(panzerschaden<0) panzerschaden = 0;
-
-	// 		out.println(
-	// 				" multi:"+multi+
-	// 				" kb: "+ kadenzBonus+
-	// 				" SS:"+(multi*kadenzBonus*angreiferSchildWaffenPunkte)+
-	// 				" PS:"+(multi*kadenzBonus*angreiferPanzerWaffenPunkte)+
-	// 				"::: ");
-	
-
-
-			long verluste = Math.round(panzerschaden/tg.getSchiffsmodell().getPanzerPunkte());
-	
-			System.out.println(tg.getSchiffsmodell().getBezeichnung() +" - " + verluste+" < "+tg.getAnzahl());
-
-			if(verluste < tg.getAnzahl())
-			{
-				Geschwader r = tg.clone();
-				r.setAnzahl(tg.getAnzahl()-((int)verluste));
-				results.add(r);
-			}
-		}
-		return results;
+		return SchlachtService.getUeberlebende(kampftick, angreifer, verteidiger);
 	}
 %>
 
@@ -221,11 +163,7 @@ $(function()
 				<tr>
 					<td>Anzahl</td>
 					<td>Schiffsmodellbezeichnung</td>
-					<td>S*</td>
-					<td>P*</td>
-					<td>SS*</td>
-					<td>PS*</td>
-					<td>FR*</td>
+					<td>Masse</td>
 				</tr>
 				<c:forEach items="${angreiferListe}" var="row">
 					<tr>
@@ -236,19 +174,7 @@ $(function()
 							${row.schiffsmodell.bezeichnung}
 						</td>
 						<td>
-							${row.schiffsmodell.schildPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.panzerPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.schildWaffenPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.panzerWaffenPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.kadenz}
+							${row.schiffsmodell.masse}
 						</td>
 					</tr>
 				</c:forEach>
@@ -259,11 +185,7 @@ $(function()
 				<tr>
 					<td>Anzahl</td>
 					<td>Schiffsmodellbezeichnung</td>
-					<td>S*</td>
-					<td>P*</td>
-					<td>SS*</td>
-					<td>PS*</td>
-					<td>FR*</td>
+					<td>Masse</td>
 				</tr>
 				<c:forEach items="${verteidigerListe}" var="row">
 					<tr>
@@ -274,19 +196,7 @@ $(function()
 							${row.schiffsmodell.bezeichnung}
 						</td>
 						<td>
-							${row.schiffsmodell.schildPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.panzerPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.schildWaffenPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.panzerWaffenPunkte}
-						</td>
-						<td>
-							${row.schiffsmodell.kadenz}
+							${row.schiffsmodell.masse}
 						</td>
 					</tr>
 				</c:forEach>

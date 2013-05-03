@@ -29,7 +29,7 @@ public class Flotte
 		setSprungAufladung(rs.getInt("sprungAufladung"));
 	}
 	
-	public List<Geschwader> getGeschwader() throws Exception
+	public List<Geschwader> getGeschwader() throws SQLException
 	{
 		return S.s().getGeschwader(this);
 	}

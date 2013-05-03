@@ -12,6 +12,19 @@ public class S
 		this.request = request;
 		request.setAttribute("ns", request.getServletPath().replaceAll("/", "_").replaceAll("\\.jsp", ""));
 	}
+	public static String concat(String... p)
+	{
+		if(p==null) return null;
+		StringBuilder sb = new StringBuilder(50);
+		for(String s:p)
+			if(s!=null)
+				sb.append(s);
+		return sb.toString();
+	}
+	public static int getTick()
+	{
+		return ContextListener.getTicker().getTick();
+	}
 	public Nutzer getNutzer()
 	{
 		return service().getNutzer(request.getSession());

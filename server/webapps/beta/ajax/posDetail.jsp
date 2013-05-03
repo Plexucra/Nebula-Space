@@ -1,3 +1,4 @@
+<%@page import="org.colony.service.FlottenService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@ include file="include/ajax-header.jsp" %>
@@ -12,7 +13,7 @@
 <%
 	session.setAttribute("selPosX",s.getInt("x"));
 	session.setAttribute("selPosY",s.getInt("y"));
-	request.setAttribute("flotten", s.service().getFlotten(s.getInt("x"), s.getInt("y")));
+	request.setAttribute("flotten", FlottenService.getFlotten(s.getInt("x"), s.getInt("y")));
 	if(request.getParameter("selFlotteId")!=null && request.getParameter("selFlotteId").trim().length()>0)
 	{
 		session.setAttribute("selFlotteId",request.getParameter("selFlotteId"));
@@ -28,11 +29,11 @@
 			if("sendeSelFlotte".equals(request.getParameter("action")))
 			{
 				session.setAttribute("sendeSelFlotte", null);
-				s.service().updateFlotten(ids, s.getNutzer(), s.getInt("x"), s.getInt("y"));
+				FlottenService.updateFlotten(ids, s.getNutzer(), s.getInt("x"), s.getInt("y"));
 			}
 			else
 			{
-				request.setAttribute("selFlotte",s.service().getFlotten(ids, s.getNutzer()));
+				request.setAttribute("selFlotte",FlottenService.getFlotten(ids, s.getNutzer()));
 			}
 		}
 	}

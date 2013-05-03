@@ -13,6 +13,8 @@ public class Geschwader implements Serializable
 	int anzahl;
 	int flotteId;
 	int schiffsmodellId;
+	//nur mittel zum zweck und nicht immer befüllt..
+	int nutzerId;
 
 
 	public Geschwader()
@@ -30,7 +32,10 @@ public class Geschwader implements Serializable
 		this.anzahl = anzahl;
 		this.schiffsmodellId = schiffsmodellId;
 	}
-
+	public double getMasse()
+	{
+		return getSchiffsmodell().getMasse()*anzahl;
+	}
 	public Geschwader clone()
 	{
 		Geschwader result = new Geschwader();
@@ -75,6 +80,14 @@ public class Geschwader implements Serializable
 	public void setId(int id)
 	{
 		this.id = id;
+	}
+	public int getNutzerId()
+	{
+		return nutzerId;
+	}
+	public void setNutzerId(int nutzerId)
+	{
+		this.nutzerId = nutzerId;
 	}
 	
 }
