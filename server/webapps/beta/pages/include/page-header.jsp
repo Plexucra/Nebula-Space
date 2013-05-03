@@ -78,29 +78,29 @@
 							<span> / h</span>
 						</div>
 						<div class="menuDiv_stage1">
-							<a id="menuPunkt1_pages_nachrichten" href='nachrichten.jsp'>Nachrichten</a>
-							<a id="menuPunkt1_pages_nebula" href='nebula.jsp'>Galaxie</a>
-							<a id="menuPunkt1_pages_karte" href='karte.jsp'>Kolonie</a>
-							<a id="menuPunkt1_pages_forschung" href='forschung.jsp'>Forschung</a>
-							<a id="menuPunkt1_pages_handel" href='handel.jsp'>Handel</a>
+							<a id="menuPunkt1_pages_nachrichten" href='${up}/pages/nachrichten.jsp'>Nachrichten</a>
+							<a id="menuPunkt1_pages_nebula" href='${up}/pages/nebula.jsp'>Galaxie</a>
+							<a id="menuPunkt1_pages_karte" href='${up}/pages/karte.jsp'>Kolonie</a>
+							<a id="menuPunkt1_pages_forschung" href='${up}/pages/forschung.jsp'>Forschung</a>
+							<a id="menuPunkt1_pages_handel" href='${up}/pages/handel.jsp'>Handel</a>
 							<a id="menuPunkt1_pages_modules_statistik" href='${up}/pages/modules/statistik/nutzer.jsp'>Statistik</a>
-							<a id="menuPunkt1_pages_einstellungen" href='einstellungen.jsp'>Einstellungen</a>
+							<a id="menuPunkt1_pages_einstellungen" href='${up}/pages/einstellungen.jsp'>Einstellungen</a>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_karte">
-							<a id="menuPunkt2_pages_karte" href='karte.jsp' >Karte</a><span> | </span>
-							<a id="menuPunkt2_pages_immobilien" href='immobilien.jsp'>Meine Immobilien</a><span> | </span>
-							<a id="menuPunkt2_pages_modell-auswahl" href='modell-auswahl.jsp'>Bauplan auswählen</a><span> | </span>
+							<a id="menuPunkt2_pages_karte" href='${up}/pages/karte.jsp' >Karte</a><span> | </span>
+							<a id="menuPunkt2_pages_immobilien" href='${up}/pages/immobilien.jsp'>Meine Immobilien</a><span> | </span>
+							<a id="menuPunkt2_pages_modell-auswahl" href='${up}/pages/modell-auswahl.jsp'>Bauplan auswählen</a><span> | </span>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nebula">
-							<a id="menuPunkt2_pages_nebula" href='nebula.jsp'>Nebula</a><span> | </span>
-							<a id="menuPunkt2_pages_nebula_" href='nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>
-							<a id="menuPunkt2_pages_nebula-flotten" href='nebula-flotten.jsp'>Meine Flotten</a>
+							<a id="menuPunkt2_pages_nebula" href='${up}/pages/nebula.jsp'>Nebula</a><span> | </span>
+							<a id="menuPunkt2_pages_nebula_" href='${up}/pages/nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>
+							<a id="menuPunkt2_pages_nebula-flotten" href='${up}/pages/nebula-flotten.jsp'>Meine Flotten</a>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nachrichten">
-							<a id="menuPunkt2_pages_nachrichten" href='nachrichten.jsp'>Neuigkeiten</a><span> | </span>
-							<a id="menuPunkt2_pages_nachrichten-posteingang" href='nachrichten-posteingang.jsp'>Posteingang</a><span> | </span>
-							<a id="menuPunkt2_pages_nachrichten-postausgang" href='nachrichten-postausgang.jsp'>Postausgang</a><span> | </span>
-							<a id="menuPunkt2_pages_nachrichten-neue-nachricht" href='nachrichten-neue-nachricht.jsp'>Neue Nachricht</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten" href='${up}/pages/nachrichten.jsp'>Neuigkeiten</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-posteingang" href='${up}/pages/nachrichten-posteingang.jsp'>Posteingang</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-postausgang" href='${up}/pages/nachrichten-postausgang.jsp'>Postausgang</a><span> | </span>
+							<a id="menuPunkt2_pages_nachrichten-neue-nachricht" href='${up}/pages/nachrichten-neue-nachricht.jsp'>Neue Nachricht</a><span> | </span>
 						</div>
 						
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_modules_statistik">

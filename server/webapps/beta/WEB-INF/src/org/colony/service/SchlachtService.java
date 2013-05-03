@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.colony.data.Flotte;
 import org.colony.data.Geschwader;
+import org.colony.data.Kampf;
 import org.colony.data.Schlacht;
 import org.colony.lib.ContextListener;
 import org.colony.lib.DbEngine;
@@ -50,7 +51,6 @@ public class SchlachtService
 	
 	public static void updateSchlachten(Connection c)
 	{
-		
 		try
 		{
 			Query q = new Query(S.concat(cm,"getNeueKonfliktpositionen"), c);
@@ -58,9 +58,9 @@ public class SchlachtService
 			{
 				Schlacht s = new Schlacht(q.getResult(), ContextListener.getTicker().getTick(), -1);
 				DbEngine.exec(c, S.concat(cm,"insertSchlacht"), s.getAnfangTick(),s.getX(),s.getY(),s.getEndeTick());
-				Query q1 = new Query(".getLastInsertId");
+				Query q1 = new Query(".getLastInsertId",c);
 				if(q1.nextResult()) s.setId(q1.getResult().getInt("id"));
-				q1.close();
+				q1.close(c);
 				
 				List<Integer> nutzerIds = new ArrayList<Integer>();
 				for(Flotte f : FlottenService.getFlotten(s.getX(), s.getY(), c))
@@ -154,5 +154,23 @@ public class SchlachtService
 		{
 			ex.printStackTrace();
 		}
+	}
+	public static List<Kampf> getKaempfe(int schlachtId)
+	{
+		List<Kampf> results = new ArrayList<Kampf>();
+		Query q = new Query(S.concat(cm, "getKaempfe"));
+		try
+		{
+			q.addParameter(schlachtId);
+			while (q.nextResult())
+				results.add(new Kampf(q.getResult()));
+		} catch (SQLException ex)
+		{
+			ex.printStackTrace();
+		} finally
+		{
+			q.close();
+		}
+		return results;
 	}
 }

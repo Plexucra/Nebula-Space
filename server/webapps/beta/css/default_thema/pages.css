@@ -19,3 +19,37 @@
 	max-width: 1200;
 	overflow: auto;
 }
+
+
+
+/*-------------------------------------------------*/
+
+
+
+
+._pages_modules_statistik_schlachtbericht #mainDiv table  td,
+._pages_modules_statistik_schlachtbericht #mainDiv table  th
+{
+	border: 1px solid white;
+	padding:5px;
+}
+._pages_modules_statistik_schlachtbericht #mainDiv table
+{
+	border-collapse: collapse;
+}
+
+._pages_modules_statistik_schlachtbericht #mainDiv table div.dn_dead
+{
+	color:red;
+}
+/*-------------------------------------------------*/
+
+
+._ajax_posDetail img
+{
+	width: 180px;
+}
+
+
+
+

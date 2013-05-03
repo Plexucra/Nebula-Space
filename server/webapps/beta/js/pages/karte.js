@@ -240,16 +240,16 @@ function draw()
 			ctx.lineWidth=0.5;
 			var tB=Math.round(vBorder/2);
 //			Gitternetz zeichnen
-			ctx.strokeStyle = "rgba(200, 200, 250, 0.5)";
-			for(var i=0; i<38; i++)
-			{
-				ctx.moveTo(i*zoom-tB,0);
-				ctx.lineTo(i*zoom-tB,1200);
-				ctx.moveTo(0,i*zoom-tB);
-				ctx.lineTo(1200,i*zoom-tB);
-			}
-			ctx.closePath();
-			ctx.stroke();
+//			ctx.strokeStyle = "rgba(200, 200, 250, 0.5)";
+//			for(var i=0; i<38; i++)
+//			{
+//				ctx.moveTo(i*zoom-tB,0);
+//				ctx.lineTo(i*zoom-tB,1200);
+//				ctx.moveTo(0,i*zoom-tB);
+//				ctx.lineTo(1200,i*zoom-tB);
+//			}
+//			ctx.closePath();
+//			ctx.stroke();
 			grundstuecke = data;
 			if(typeof selGrundstueckY !== 'undefined' )
 			{

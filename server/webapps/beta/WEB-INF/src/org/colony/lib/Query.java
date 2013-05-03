@@ -57,6 +57,7 @@ public class Query
 
 	public boolean nextResult() throws SQLException
 	{
+//		System.out.println("qery:"+getPs());
 		if (getResult() != null)
 		{
 			return getResult().next();

@@ -12,6 +12,7 @@ public class Sql
 		if(map==null)
 		{
 			map = new HashMap<String,String>();
+			map.put(".getLastInsertId","select LAST_INSERT_ID() as id");
 			map.put("PlanetService.getPlaneten", "select * from planet");
 			map.put("PlanetService.getAnzahlNutzer", "SELECT count(heimatPlanetId) as anzahlNutzer FROM nutzer where heimatPlanetId = ?");
 			map.put("SchiffsmodellService.getBonusListe","select bSchiffsmodellId as schiffsmodellId, bonus from schiffsmodellbonus where aSchiffsmodellId = ?");
@@ -23,13 +24,13 @@ public class Sql
 					"where schlacht.id is null  " +
 					"group by flotte.x,flotte.y HAVING COUNT(DISTINCT heimatPlanetId) > 1");
 			map.put("SchlachtService.closeSchlacht","update schlacht set endeTick=? where id = ?");
-			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text) values (?,?,?,?,?)");
 			map.put("SchlachtService.deleteEmptyGeschwader","delete from geschwader where anzahl < 1");
+			map.put("SchlachtService.insertSchlacht", "insert into schlacht (anfangTick,x,y,endeTick) values (?,?,?,?)");
+			map.put("SchlachtService.getKaempfe", "select * from kampf where schlachtId = ?");
 			map.put("FlottenService.getEmptyFlotten","select * from flotte where flotte.id in (select f.id from flotte as f left outer join geschwader on (geschwader.flotteId = f.id) where geschwader.flotteId is null)");
 			map.put("FlottenService.deleteFlotte","delete from flotte where id = ?");
-			map.put("SchlachtService.insertSchlacht", "insert into schlacht (anfangTick,x,y,endeTick) values (?,?,?,?)");
-			map.put(".getLastInsertId","select LAST_INSERT_ID() as id");
-			
+			map.put("NachrichtService.getUngeleseneSystemNachrichten","select * from nachricht where nutzerIdSender = 0 and gelesen = 0 and nutzerIdEmpfaenger = ?");
+			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text, datumGesendet) values (?,?,?,?,?,NOW())");
 		}
 		return map;
 	}

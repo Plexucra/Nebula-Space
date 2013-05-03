@@ -33,11 +33,11 @@ $(function()
 		selPosX=x;//+vX;
 		selPosY=y;//+vY;
 
+		draw();
 		$.get('../ajax/posDetail.jsp?x='+x+'&y='+y, function(data2) 
 		{
 			$("."+ns+" .sidebar").html(data2);
 		});
-		draw();
 	});
 });
 

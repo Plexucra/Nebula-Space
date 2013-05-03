@@ -6,7 +6,7 @@ if(session.getAttribute("userId")==null)
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="f" tagdir="/WEB-INF/tags/format" %> 
 
 <%
 	S s = new S(request);
@@ -15,3 +15,4 @@ if(session.getAttribute("userId")==null)
 	request.setAttribute("ns", ns);
 	request.setAttribute("up", "/beta"); //URL-Präfix zur absoluten adressierung
 %>
+

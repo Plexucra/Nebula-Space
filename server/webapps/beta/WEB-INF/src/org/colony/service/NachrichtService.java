@@ -2,12 +2,19 @@ package org.colony.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.colony.data.Nachricht;
 import org.colony.data.Nutzer;
+import org.colony.lib.Query;
+import org.colony.lib.S;
 import org.colony.lib.Sql;
 
 public class NachrichtService
 {
+	public static final String cm = "NachrichtService.";
 	public static final int TYP_SCHLACHT = 3;
 	public static final int TYP_NACHRICHT = 1;
 
@@ -38,5 +45,24 @@ public class NachrichtService
 	public static void sendSystemNachricht(Connection c, Nutzer empfaenger, int typ, String text)
 	{
 		sendNachricht(c, null, empfaenger, typ, null, text);
+	}
+
+	public static List<Nachricht> getUngeleseneSystemNachrichten(int nutzerId)
+	{
+		List<Nachricht> results = new ArrayList<Nachricht>();
+		Query q = new Query(S.concat(cm, "getUngeleseneSystemNachrichten"));
+		try
+		{
+			q.addParameter(nutzerId);
+			while (q.nextResult())
+				results.add(new Nachricht(q.getResult()));
+		} catch (SQLException ex)
+		{
+			ex.printStackTrace();
+		} finally
+		{
+			q.close();
+		}
+		return results;
 	}
 }

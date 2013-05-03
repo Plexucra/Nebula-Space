@@ -1,9 +1,10 @@
+<%@page import="org.colony.service.FlottenService"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="include/page-header.jsp" %>
 <div>
 	<h3>Flottenübersicht:</h3>
 	<%
-	request.setAttribute("flotten",S.s().getFlotten(S.s().getNutzer(session)));
+	request.setAttribute("flotten",FlottenService.getFlotten(S.s().getNutzer(session)));
 	%>
 	<div class="${ns}_flottenliste">
 		<table>
@@ -25,7 +26,7 @@
 					<td>
 						<c:forEach items="${ row.geschwader }" var="geschwader">
 							${ geschwader.anzahl } 
-							${ geschwader.schiffsmodell.bezeichnung }
+							${ geschwader.schiffsmodell.bezeichnung }<br/>
 						</c:forEach>
 					</td>
 				</tr>
