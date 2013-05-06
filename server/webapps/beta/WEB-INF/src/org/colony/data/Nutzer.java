@@ -1,6 +1,6 @@
 package org.colony.data;
 
-import org.colony.lib.S;
+import org.colony.lib.Cache;
 
 public class Nutzer
 {
@@ -9,17 +9,27 @@ public class Nutzer
 	String key;
 	long kontostand;
 	int gewinn;
-	int anzahlGebaeude = 0;
+//	int anzahlGebaeude = 0;
 	int heimatPlanetId;
 	
+	public int getAllianzId()
+	{
+		return getHeimatPlanet().getAllianzId();
+	}
+	
+	public Allianz getAllianz()
+	{
+		return getHeimatPlanet().getAllianz();
+	}
+
 	public Planet getHeimatPlanet()
 	{
-		return S.s().getPlanet(getHeimatPlanetId());
+		return Cache.get().getPlanet(getHeimatPlanetId());
 	}
 	
 	public int getBauplatzKosten()
 	{
-		return anzahlGebaeude>20?((anzahlGebaeude-20)*3000):0;
+		return 0; // anzahlGebaeude>20?((anzahlGebaeude-20)*3000):0;
 	}
 	
 	public int getId()
@@ -54,14 +64,14 @@ public class Nutzer
 	{
 		this.gewinn = gewinn;
 	}
-	public int getAnzahlGebaeude()
-	{
-		return anzahlGebaeude;
-	}
-	public void setAnzahlGebaeude(int anzahlGebaeude)
-	{
-		this.anzahlGebaeude = anzahlGebaeude;
-	}
+//	public int getAnzahlGebaeude()
+//	{
+//		return anzahlGebaeude;
+//	}
+//	public void setAnzahlGebaeude(int anzahlGebaeude)
+//	{
+//		this.anzahlGebaeude = anzahlGebaeude;
+//	}
 
 	public int getHeimatPlanetId()
 	{

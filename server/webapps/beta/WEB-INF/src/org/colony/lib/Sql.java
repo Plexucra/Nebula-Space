@@ -31,12 +31,13 @@ public class Sql
 			map.put("FlottenService.deleteFlotte","delete from flotte where id = ?");
 			map.put("NachrichtService.getUngeleseneSystemNachrichten","select * from nachricht where nutzerIdSender = 0 and gelesen = 0 and nutzerIdEmpfaenger = ?");
 			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text, datumGesendet) values (?,?,?,?,?,NOW())");
+			map.put("AllianzService.getAllianzen","select * from allianz");
 		}
 		return map;
 	}
 
 	public static String get(String name)
 	{
-		return getMap().get(name);
+		return getMap().get(name)==null?name:getMap().get(name);
 	}
 }

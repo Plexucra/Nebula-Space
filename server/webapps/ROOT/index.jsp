@@ -1,7 +1,7 @@
 <%@ page pageEncoding="UTF-8"%><!doctype html>
 <html lang="de">
 <%
-if(request.getParameter("userId")==null)
+if(request.getParameter("key")==null)
 {
 %>
 	<head>

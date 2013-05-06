@@ -76,20 +76,22 @@ else
 				int amin=0;
 				for(Planet p : PlanetService.getPlaneten())
 				{
+					int anzahlNutzer = PlanetService.getAnzahlNutzer(p);
 					if(min==null)
 					{
-						amin=p.getAnzahlNutzer();
+						
+						amin=anzahlNutzer;
 						min=p;
 					}
-					if(p.getAnzahlNutzer() < amin)
+					if(anzahlNutzer < amin)
 					{
-						amin = p.getAnzahlNutzer();
+						amin = anzahlNutzer;
 						min = p;
 					}
 				}
 				
 				for(Planet p : PlanetService.getPlaneten())
-					out.println("<option value=\""+p.getId()+"\" "+(p.getId()==min.getId()?"selected='selected'":"")+">Planet: "+p.getName()+(p.getId()==min.getId()?"(empfohlen)":"")+" - Spezies: "+p.getSpezies()+" - Firmen:"+p.getAnzahlNutzer()+"</option>");
+					out.println("<option value=\""+p.getId()+"\" "+(p.getId()==min.getId()?"selected='selected'":"")+">Planet: "+p.getName()+(p.getId()==min.getId()?"(empfohlen)":"")+" - Spezies: "+p.getSpezies()+" - Firmen:"+ PlanetService.getAnzahlNutzer(p)+"</option>");
 				%>
 			</select>
 

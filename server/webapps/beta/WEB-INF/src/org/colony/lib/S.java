@@ -2,6 +2,7 @@ package org.colony.lib;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.colony.data.Allianz;
 import org.colony.data.Nutzer;
 
 public class S
@@ -24,6 +25,10 @@ public class S
 	public static int getTick()
 	{
 		return ContextListener.getTicker().getTick();
+	}
+	public Allianz getAllianz()
+	{
+		return service().getNutzer(request.getSession()).getAllianz();
 	}
 	public Nutzer getNutzer()
 	{

@@ -1,12 +1,12 @@
 package org.colony.service;
 
 import org.colony.data.Nutzer;
-import org.colony.lib.S;
+import org.colony.lib.Cache;
 
 public class NutzerService
 {
 	public static Nutzer getById(int id)
 	{
-		return S.s().getNutzer(id);
+		return Cache.get().getNutzer(id);
 	}
 }

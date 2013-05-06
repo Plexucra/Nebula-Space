@@ -1,3 +1,6 @@
+<%@page import="org.colony.data.Flotte"%>
+<%@page import="org.colony.data.Geschwader"%>
+<%@page import="org.colony.service.PlanetService"%>
 <%@page import="org.colony.data.Planet"%>
 <%@page import="org.colony.service.FlottenService"%>
 <%@page import="java.util.ArrayList"%>
@@ -164,8 +167,8 @@
 									Flugziel: <a href="nebula.jsp?x=${row.zielX}&y=${row.zielY}">${row.zielX}:${row.zielY}</a></td>
 							</tr>
 						</c:if>
-						
-						<c:forEach items="${ row.geschwader }" var="geschwader">
+						<% pageContext.setAttribute("t_geschwader", FlottenService.getGeschwader( (Flotte)pageContext.getAttribute("row"))); %>
+						<c:forEach items="${ t_geschwader }" var="geschwader">
 							<tr>
 								<td colspan="2">
 									${ geschwader.anzahl } 
@@ -196,7 +199,9 @@
 							<td>${row.zielX}:${row.zielY}</td>
 							<td>${row.sprungAufladung}</td>
 						</tr>
-						<c:forEach items="${ row.geschwader }" var="geschwader">
+						<% pageContext.setAttribute("t_geschwader", FlottenService.getGeschwader( (Flotte)pageContext.getAttribute("row"))); %>
+						<c:forEach items="${ t_geschwader }" var="geschwader">
+<%-- 						<c:forEach items="${ row.geschwader }" var="geschwader"> --%>
 							<tr>
 								<td colspan="4">
 									${ geschwader.anzahl } 

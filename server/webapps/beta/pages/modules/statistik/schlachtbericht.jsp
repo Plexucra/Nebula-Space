@@ -18,13 +18,13 @@ List<Kampf> kaempfe2 = new ArrayList<Kampf>();
 boolean berechtigt = false;
 for(Kampf k : kaempfe)
 {
-	int hp = NutzerService.getById(k.getNutzerId()).getHeimatPlanetId();
+	int hp = NutzerService.getById(k.getNutzerId()).getAllianzId();
 	if(p1 == -1)
 		p1 = hp;
 	else if(p2==-1)
 		p2=hp;
 	
-	if(hp == s.getNutzer().getHeimatPlanetId())
+	if(hp == s.getNutzer().getAllianzId())
 		berechtigt= true;
 	
 	if(hp==p1)

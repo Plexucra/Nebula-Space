@@ -92,10 +92,10 @@ public class SchlachtService
 
 			for (Flotte f : flotten)
 			{
-				int id = f.getBesitzer().getHeimatPlanetId();
+				int id = f.getBesitzer().getAllianzId();
 				if (sf.get(id) == null)
 					sf.put(id, new ArrayList<Geschwader>());
-				for (Geschwader g : S.s().getGeschwader(f))
+				for (Geschwader g : FlottenService.getGeschwader(f))
 				{
 					g.setNutzerId(f.getBesitzerNutzerId());
 					sf.get(id).add(g);

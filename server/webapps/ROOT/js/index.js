@@ -37,14 +37,17 @@
 			if (authResult && !authResult.error)
 			{
 				showLoginForwardMsg();
- 				$.get('https://www.googleapis.com/oauth2/v1/userinfo?access_token='+authResult.access_token, function(data)
+ 				$.getJSON('https://www.googleapis.com/oauth2/v1/userinfo?access_token='+authResult.access_token, function(data)
  				{
- 					if(data && data.verified_email)
+ 					try
  					{
-	 					console.log(data);
-	 					location.replace("/?key="+data.id);
+ 						location.replace("/beta/pages/login.jsp?key="+data.id);
  					}
- 					else alert("Beim Login ist ein Fehler aufgetreten.");
+ 					catch(ex)
+ 					{
+ 						console.log(data);
+ 						alert("Beim Login ist ein Fehler aufgetreten.");
+ 					}
  				});
 	        }
 			else

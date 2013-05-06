@@ -8,12 +8,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.colony.data.Flotte;
+import org.colony.data.Geschwader;
 import org.colony.data.Nutzer;
+import org.colony.data.Schiffsmodell;
 import org.colony.lib.DbEngine;
 import org.colony.lib.Query;
 
 public class FlottenService
 {
+	/**
+	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
+	 */
+	public static List<Geschwader> getGeschwader(Flotte f) throws SQLException
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			return getGeschwader(f, c);
+		}
+		finally { c.close(); }
+	}
+	
+	/**
+	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
+	 */
+	public static  List<Geschwader> getGeschwader(Flotte f, Connection c) throws SQLException
+	{
+		List<Geschwader> results = new ArrayList<Geschwader>();
+		PreparedStatement ps = c.prepareStatement("	SELECT * from geschwader where flotteId = "+f.getId());
+		ResultSet rs = ps.executeQuery(); 
+		while(rs != null && rs.next()) results.add(new Geschwader(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+
+	/**
+	 * Liefert die Flotten welche gerade im Begriff sind zu "springen".
+	 */
+	public static  List<Flotte> getSprungFlotten(Connection c) throws SQLException
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("	SELECT   id,  besitzerNutzerId, zielX,  zielY, x, y, sprungAufladung from flotte where sprungAufladung = 0 and zielX is not null");
+		ResultSet rs = ps.executeQuery();
+		while(rs != null && rs.next()) results.add(new Flotte(rs));
+		if(rs!=null) rs.close();
+		ps.close();
+		return results;
+	}
+
+	synchronized public static void insertFlottenschiff(Connection c, Flotte f, Schiffsmodell sm) throws Exception
+	{
+		Geschwader zielGeschwader = null;
+		for(Geschwader g : getGeschwader(f, c))
+			if(g.getSchiffsmodellId() == sm.getId())
+				zielGeschwader = g;
+		
+		if(zielGeschwader == null)
+		{
+			PreparedStatement ps = c.prepareStatement("insert into geschwader (`flotteId`,`schiffsmodellId`,anzahl) values (?,?,1)");
+			ps.setInt(1, f.getId());
+			ps.setInt(2, sm.getId());
+			ps.executeUpdate();
+			ps.close();
+		}
+		else
+		{
+			PreparedStatement ps = c.prepareStatement("update geschwader set anzahl = anzahl+1 where id = ?");
+			ps.setInt(1, zielGeschwader.getId());
+			ps.executeUpdate();
+			ps.close();
+		}
+	}
+	
 	public static void destroyEmptyFlotten(Connection c)
 	{
 		try

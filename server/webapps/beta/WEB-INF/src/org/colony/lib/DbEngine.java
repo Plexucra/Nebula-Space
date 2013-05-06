@@ -24,7 +24,7 @@ public class DbEngine
 		if(p!=null)
 			for(int i =0; i< p.length; i++)
 				ps.setInt(i+1, p[i]);
-		System.out.println("exec: "+ps.toString());
+//		System.out.println("exec: "+ps.toString());
 		ps.executeUpdate();
 		ps.close();
 	}
@@ -38,7 +38,7 @@ public class DbEngine
 			
 			try
 			{
-				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/97_nebula","97_nebula","ketzer82");
+				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/beta","root","ketzer82");
 			}
 			catch(Exception ex2)
 			{

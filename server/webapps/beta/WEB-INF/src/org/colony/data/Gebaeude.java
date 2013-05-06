@@ -3,8 +3,8 @@ package org.colony.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.colony.lib.Cache;
 import org.colony.lib.ContextListener;
-import org.colony.lib.S;
 
 public class Gebaeude
 {
@@ -30,14 +30,14 @@ public class Gebaeude
 		setAlter(rs.getInt("alter"));
 		setAusgaben(rs.getInt("ausgaben"));
 		setAuslastung(rs.getInt("auslastung"));
-		setBesitzer(S.s().getNutzer(rs.getInt("besitzerNutzerId")));
+		setBesitzer( Cache.get().getNutzer(rs.getInt("besitzerNutzerId")));
 		setEffizienz(rs.getFloat("effizienz"));
 		setEinnahmen(rs.getInt("einnahmen"));
 		setGrundstueckId(rs.getInt("grundstueckId"));
 		setGrundstueckX(rs.getInt("grundstueckX"));
 		setGrundstueckY(rs.getInt("grundstueckY"));
-		setModell(S.s().getModell(rs.getInt("modellId")));
-		setPlanet(S.s().getPlanet(rs.getInt("planetId")));
+		setModell(Cache.get().getModell(rs.getInt("modellId")));
+		setPlanet(Cache.get().getPlanet(rs.getInt("planetId")));
 	}
 
 	public int getWartungskostenanteil()

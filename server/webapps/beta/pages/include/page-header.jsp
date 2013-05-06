@@ -82,7 +82,7 @@
 							<a id="menuPunkt1_pages_nebula" href='${up}/pages/nebula.jsp'>Galaxie</a>
 							<a id="menuPunkt1_pages_karte" href='${up}/pages/karte.jsp'>Kolonie</a>
 							<a id="menuPunkt1_pages_forschung" href='${up}/pages/forschung.jsp'>Forschung</a>
-							<a id="menuPunkt1_pages_handel" href='${up}/pages/handel.jsp'>Handel</a>
+							<a id="menuPunkt1_pages_modules_handel" href='${up}/pages/modules/handel/uebersicht.jsp'>Handel</a>
 							<a id="menuPunkt1_pages_modules_statistik" href='${up}/pages/modules/statistik/nutzer.jsp'>Statistik</a>
 							<a id="menuPunkt1_pages_einstellungen" href='${up}/pages/einstellungen.jsp'>Einstellungen</a>
 						</div>
@@ -106,7 +106,10 @@
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_modules_statistik">
 							<a id="menuPunkt2_pages_modules_statistik_nutzer" href='${up}/pages/modules/statistik/nutzer.jsp'>Firmen-Statistik</a><span> | </span>
 							<a id="menuPunkt2_pages_modules_statistik_schlachtensimulator" href='${up}/pages/modules/statistik/schlachtensimulator.jsp'>Schlachtensimulator</a><span> | </span>
+						</div>
 						
+						<div class="menuDiv_stage2" ref="menuPunkt1_pages_modules_handel">
+							<a id="menuPunkt2_pages_modules_handel_uebersicht" href='${up}/pages/modules/handel/uebersicht.jsp'>Handelsplätze</a><span> | </span>
 						</div>
 
 

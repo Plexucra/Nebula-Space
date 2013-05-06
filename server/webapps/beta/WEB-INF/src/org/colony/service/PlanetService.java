@@ -6,13 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.colony.data.Planet;
+import org.colony.lib.Cache;
 import org.colony.lib.Query;
 
 public class PlanetService
 {
 	public static List<Planet> getPlaneten()
 	{
-		return getPlaneten(null);
+		List<Planet> result = new ArrayList<Planet>();
+		for(Planet p : Cache.get().getPlaneten().values())
+			result.add(p);
+		return result;
 	}
 	public static List<Planet> getPlaneten(Connection c)
 	{

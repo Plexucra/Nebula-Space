@@ -2,10 +2,8 @@ package org.colony.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
-import org.colony.lib.ContextListener;
-import org.colony.lib.S;
+import org.colony.lib.Cache;
 
 public class Flotte
 {
@@ -29,10 +27,11 @@ public class Flotte
 		setSprungAufladung(rs.getInt("sprungAufladung"));
 	}
 	
-	public List<Geschwader> getGeschwader() throws SQLException
-	{
-		return S.s().getGeschwader(this);
-	}
+	//Kann zu deadlocks führen..
+//	public List<Geschwader> getGeschwader() throws SQLException
+//	{
+//		return S.s().getGeschwader(this);
+//	}
 
 	public void setPosition(Position p)
 	{
@@ -66,7 +65,7 @@ public class Flotte
 	
 	public Nutzer getBesitzer()
 	{
-		return ContextListener.getService().getNutzer(getBesitzerNutzerId());
+		return Cache.get().getNutzer(getBesitzerNutzerId());
 	}
 	public int getId()
 	{

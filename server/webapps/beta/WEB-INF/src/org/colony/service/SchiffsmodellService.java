@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.colony.data.Schiffsmodell;
+import org.colony.lib.Cache;
 import org.colony.lib.Query;
-import org.colony.lib.S;
 
 public class SchiffsmodellService
 {
 	public static  Schiffsmodell getById(int id)
 	{
-		return S.s().getSchiffsmodell(id);
+		return Cache.get().getSchiffsmodell(id);
 	}
 	public static Map<Integer,Float> getBonusListe(Schiffsmodell m)
 	{

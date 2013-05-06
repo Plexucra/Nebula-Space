@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.colony.lib.ContextListener;
+import org.colony.lib.Cache;
 
 public class Geschwader implements Serializable
 {
@@ -47,7 +47,7 @@ public class Geschwader implements Serializable
 	}
 	public Schiffsmodell getSchiffsmodell()
 	{
-		return ContextListener.getService().getSchiffsmodell(getSchiffsmodellId());
+		return Cache.get().getSchiffsmodell(getSchiffsmodellId());
 	}
 	public int getAnzahl()
 	{
