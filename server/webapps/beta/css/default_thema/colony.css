@@ -25,6 +25,7 @@ body, td, th
 	font-size:12px;
 	text-align: left;
 }
+td[align='right'] { text-align: right; }
 small
 {
 	color:#555;
@@ -258,6 +259,10 @@ span.cn_negativ
 /* 	padding: 5px; */
 /* } */
 
+img.dn_modell
+{ 
+	width: 180px;
+}
 
 tr.cn_disabled td { color: gray; }
 

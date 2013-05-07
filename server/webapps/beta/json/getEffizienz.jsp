@@ -1,3 +1,5 @@
+<%@page import="org.colony.lib.Cache"%>
+<%@page import="org.colony.service.GebaeudeService"%>
 <%@page import="org.colony.data.Modell"%>
 <%@page import="java.util.List"%>
 <%@page import="flexjson.JSONSerializer"%>
@@ -9,11 +11,11 @@
 Gebaeude g = new Gebaeude();
 g.setGrundstueckX(Integer.parseInt(request.getParameter("x")));
 g.setGrundstueckY(Integer.parseInt(request.getParameter("y")));
-List<Gebaeude> gs = ContextListener.getService().getRelevanteGebaeude(g);
+List<Gebaeude> gs = GebaeudeService.getRelevanteGebaeude(g);
 
 Modell bestM = null;
 float bestE=0;
-for(Modell m :ContextListener.getService().getModelle().values())
+for(Modell m : Cache.get().getModelle().values())
 {
 	if(bestM==null) bestM = m;
 	g.setModell(m);

@@ -13,6 +13,16 @@ public class Query
 	ResultSet rs = null;
 	int currentParameterPos = 1;
 
+	public static int selectInt(String sql, Connection c, int... parameter) throws SQLException
+	{
+		Query q = new Query(sql,c);
+		if(parameter!=null)
+			for(int i : parameter)
+				q.addParameter(i);
+		if(q.nextResult())
+			return q.getResult().getInt(1);
+		return -1;
+	}
 	public Query(String sql)
 	{
 		if(Sql.get(sql)!=null) sql=Sql.get(sql);

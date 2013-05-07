@@ -1,3 +1,5 @@
+<%@page import="org.colony.service.PlanetService"%>
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.lib.Formater"%>
 <%@page import="java.text.NumberFormat"%>
 <%@ include file="/pages/include/init.jsp" %>
@@ -29,7 +31,7 @@
 					<table width="100%">
 						<tr><td>Angemeldet als:</td>
 						<td>
-							<%= ContextListener.getService().getNutzer(session).getAlias() %>
+							<%= NutzerService.getNutzer(session).getAlias() %>
 						</td>
 						<td class="dn_tickInfo" align="right"> - Tick: in <span class="dn_tickTimeInfo"><%= timeToNextTick %> Sek.</span> </td>
 						</tr>
@@ -73,8 +75,8 @@
 					<div>
 						<div style="float:right">
 							<span>Konto: </span>
-							<%= Formater.formatCurrency(ContextListener.getService().getNutzer(session).getKontostand()) %> 
-							<%= Formater.formatDiffCurrency( ContextListener.getService().getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %>
+							<%= Formater.formatCurrency(NutzerService.getNutzer(session).getKontostand()) %> 
+							<%= Formater.formatDiffCurrency( NutzerService.getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %>
 							<span> / h</span>
 						</div>
 						<div class="menuDiv_stage1">
@@ -93,7 +95,17 @@
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nebula">
 							<a id="menuPunkt2_pages_nebula" href='${up}/pages/nebula.jsp'>Nebula</a><span> | </span>
-							<a id="menuPunkt2_pages_nebula_" href='${up}/pages/nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>Springe zum Heimatplanet</a><span> | </span>
+							<a id="menuPunkt2_pages_nebula_" href='${up}/pages/nebula.jsp?x=${s.nutzer.heimatPlanet.x}&y=${s.nutzer.heimatPlanet.y}'>
+								<% request.setAttribute("plist",PlanetService.getPlaneten()); %>
+								Springe zu:
+							</a>
+							<select onchange="location.replace('${up}/pages/nebula.jsp'+this.value)">
+								<option>Bitte wählen</option>
+								<c:forEach items="${ plist }" var="row">
+									<option value="?x=${ row.x }&y=${ row.y }">${ row.name }</option>
+								</c:forEach>
+							</select>
+							<span> | </span>
 							<a id="menuPunkt2_pages_nebula-flotten" href='${up}/pages/nebula-flotten.jsp'>Meine Flotten</a>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_nachrichten">

@@ -1,7 +1,7 @@
 <div>
 	<span class="cn_label">Ausgewählter Bauplan:</span>
 	<div>
-		<% request.setAttribute("t_modell",s.service().getModell( (Integer)session.getAttribute("selModellId")) );  %>
+		<% request.setAttribute("t_modell",Cache.get().getModell( (Integer)session.getAttribute("selModellId")) );  %>
 		<span class="cn_value">${t_modell.bezeichnung}</span><br/>
 		<span class="cn_label">Kapazität:</span> <b>${t_modell.kapazitaet}</b><br/>
 

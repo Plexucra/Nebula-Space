@@ -1,3 +1,4 @@
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.lib.S"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@ page pageEncoding="UTF-8"%>
@@ -27,7 +28,7 @@ try
 	ps.setInt(2, x-20);
 	ps.setInt(3, y+15);
 	ps.setInt(4, y-8);
-	ps.setInt(5, S.s().getNutzer(session).getHeimatPlanetId());
+	ps.setInt(5, NutzerService.getNutzer(session).getHeimatPlanetId());
 	ResultSet rs = ps.executeQuery();
 	
 	StringBuffer sb = new StringBuffer(5000);

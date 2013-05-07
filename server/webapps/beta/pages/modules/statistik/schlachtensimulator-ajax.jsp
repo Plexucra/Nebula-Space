@@ -1,3 +1,4 @@
+<%@page import="org.colony.lib.Cache"%>
 <%@page import="org.colony.service.SchlachtService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.colony.data.Geschwader"%>
@@ -210,7 +211,7 @@ $(function()
 				<input type="text" name="anzahl" size="5" placeholder="Anzahl" title="Bitte hier die Anzahl eingeben"/>
 				<select name="schiffsmodellId">
 					<%
-						for(Schiffsmodell sm : S.s().getSchiffsmodelle().values())
+						for(Schiffsmodell sm : Cache.get().getSchiffsmodelle().values())
 							out.println("<option value=\""+sm.getId()+"\">"+sm.getBezeichnung()+"</option>");
 					%>
 				</select>
@@ -223,7 +224,7 @@ $(function()
 				<input type="text" name="anzahl" size="5" placeholder="Anzahl" title="Bitte hier die Anzahl eingeben"/>
 				<select name="schiffsmodellId">
 					<%
-						for(Schiffsmodell sm : S.s().getSchiffsmodelle().values())
+						for(Schiffsmodell sm : Cache.get().getSchiffsmodelle().values())
 							out.println("<option value=\""+sm.getId()+"\">"+sm.getBezeichnung()+"</option>");
 					%>
 				</select>

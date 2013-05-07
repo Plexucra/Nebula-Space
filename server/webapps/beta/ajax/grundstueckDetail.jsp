@@ -1,3 +1,5 @@
+<%@page import="org.colony.lib.Cache"%>
+<%@page import="org.colony.service.GebaeudeService"%>
 <%@page import="java.util.List"%>
 <%@ include file="include/ajax-header.jsp" %>
 <%@ page pageEncoding="UTF-8"%>
@@ -9,7 +11,7 @@
 <%@page import="org.colony.data.Modell"%>
 <%@page import="org.colony.lib.S"%>
 <%
-	Gebaeude g = s.service().getGebaeude(s.getNutzer().getHeimatPlanet(), s.getInt("x"), s.getInt("y"));
+	Gebaeude g =GebaeudeService.getGebaeude(s.getNutzer().getHeimatPlanet(), s.getInt("x"), s.getInt("y"));
 	session.setAttribute("selGrundstueckX",s.getInt("x"));
 	session.setAttribute("selGrundstueckY",s.getInt("y"));
 	request.setAttribute("g", g);
@@ -84,7 +86,7 @@
 		g2.setGrundstueckX(s.getInt("x"));
 		g2.setGrundstueckY(s.getInt("y"));
 		g2.setPlanet(s.getNutzer().getHeimatPlanet());
-		List<Gebaeude> gs = s.service().getRelevanteGebaeude(g2);
+		List<Gebaeude> gs = GebaeudeService.getRelevanteGebaeude(g2);
 		boolean hatNachbarn = true;
 		
 // 		if(gs!=null) for(Gebaeude tg : gs)
@@ -96,7 +98,7 @@
 		{
 			Modell bestM = null;
 			float bestE=0;
-			for(Modell m : s.service().getModelle().values())
+			for(Modell m : Cache.get().getModelle().values())
 			{
 				if(bestM==null) bestM = m;
 				g2.setModell(m);

@@ -3,8 +3,8 @@
 <%@ include file="include/page-header.jsp" %>
 <script>
 	<%
-	int selPosX = S.s().getNutzer(session).getHeimatPlanet().getX();
-	int selPosY = S.s().getNutzer(session).getHeimatPlanet().getY();
+	int selPosX = NutzerService.getNutzer(session).getHeimatPlanet().getX();
+	int selPosY = NutzerService.getNutzer(session).getHeimatPlanet().getY();
 	if(session.getAttribute("selPosX")!=null) selPosX=(Integer)session.getAttribute("selPosX");
 	if(session.getAttribute("selPosY")!=null) selPosY=(Integer)session.getAttribute("selPosY");
 	if(request.getParameter("x")!=null) selPosX=Integer.parseInt(request.getParameter("x"));

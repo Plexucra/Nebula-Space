@@ -1,10 +1,11 @@
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.data.Planet"%>
 <%@page import="org.colony.service.PlanetService"%>
 <%@page import="org.colony.data.Nutzer"%>
 <%@ page pageEncoding="UTF-8"%><%@page import="org.colony.lib.ContextListener"%><%
 if(request.getParameter("key")==null) throw new Exception("Beim Anmeldeverfahren kam es zu einen Fehler in der Verarbeitung (fehlender Login-Key).");
 
-Nutzer nutzer = ContextListener.getService().getNutzerByKey(request.getParameter("key"));
+Nutzer nutzer = NutzerService.getNutzerByKey(request.getParameter("key"));
 if(nutzer!=null)
 	session.setAttribute("userId", nutzer.getId());
 

@@ -1,3 +1,5 @@
+<%@page import="org.colony.service.GebaeudeService"%>
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.lib.ContextListener"%>
 <%@page import="org.colony.data.Gebaeude"%>
 <%@page import="java.util.logging.Level"%>
@@ -18,8 +20,8 @@
 	try
 	{
 		Gebaeude g = new Gebaeude();
-		ContextListener.getService().insertGebaeude(
-			ContextListener.getService().getNutzer(session), 
+		GebaeudeService.insertGebaeude(
+			NutzerService.getNutzer(session), 
 			Integer.parseInt(request.getParameter("x")), 
 			Integer.parseInt(request.getParameter("y")), 
 			Integer.parseInt(request.getParameter("modellId")));

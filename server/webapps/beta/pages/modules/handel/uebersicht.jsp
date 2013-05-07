@@ -1,3 +1,4 @@
+<%@page import="org.colony.data.Order"%>
 <%@page import="org.colony.service.HandelService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.colony.data.Planet"%>
@@ -10,9 +11,12 @@
 <h1>Handelsplätze</h1>
 <% request.setAttribute("plist",PlanetService.getPlaneten()); %>
 
-
+<%
+List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
+%>
 <table>
 	<tr>
+		<th/>
 		<th><%= HandelService.ress1Name %></th>
 		<th><%= HandelService.ress2Name %></th>
 		<th><%= HandelService.ress3Name %></th>
@@ -34,22 +38,40 @@
 			</c:choose>
 		</td>
 	</tr>
-	<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
-		<td><span class="cn_label">Fördermenge:</span></td>
-		<td>${row.ress1Vorkommen}</td>
-		<td>${row.ress2Vorkommen}</td>
-		<td>${row.ress3Vorkommen}</td>
-		<td>${row.ress4Vorkommen}</td>
-		<td>${row.ress5Vorkommen}</td>
-	</tr>
-	<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
-		<td><span class="cn_label">Letzter Kurs:</span></td>
-		<td>${row.ress1Vorkommen} <c:if test="${ row.allianz.id eq s.allianz.id }"><br/><a href="#">Kauforder</a>  <br/><a href="#">Verkauforder</a> </c:if></td>
-		<td>${row.ress2Vorkommen} <c:if test="${ row.allianz.id eq s.allianz.id }"><br/><a href="#">Kauforder</a>  <br/><a href="#">Verkauforder</a> </c:if></td>
-		<td>${row.ress3Vorkommen} <c:if test="${ row.allianz.id eq s.allianz.id }"><br/><a href="#">Kauforder</a>  <br/><a href="#">Verkauforder</a> </c:if></td>
-		<td>${row.ress4Vorkommen} <c:if test="${ row.allianz.id eq s.allianz.id }"><br/><a href="#">Kauforder</a>  <br/><a href="#">Verkauforder</a> </c:if></td>
-		<td>${row.ress5Vorkommen} <c:if test="${ row.allianz.id eq s.allianz.id }"><br/><a href="#">Kauforder</a>  <br/><a href="#">Verkauforder</a> </c:if></td>
-	</tr>
+	<c:if test="${ row.allianz.id eq s.allianz.id }">
+		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
+			<td><span class="cn_label">Fördermenge:</span></td>
+			<td>${row.ress1Vorkommen}</td>
+			<td>${row.ress2Vorkommen}</td>
+			<td>${row.ress3Vorkommen}</td>
+			<td>${row.ress4Vorkommen}</td>
+			<td>${row.ress5Vorkommen}</td>
+		</tr>
+		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
+			<td><span class="cn_label">Letzter Kurs:</span></td>
+			<td>${row.ress1Vorkommen}</td>
+			<td>${row.ress2Vorkommen}</td>
+			<td>${row.ress3Vorkommen}</td>
+			<td>${row.ress4Vorkommen}</td>
+			<td>${row.ress5Vorkommen}</td>
+		</tr>
+		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
+			<td><span class="cn_label">Ihre aktuellen Orders:</span></td>
+			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==1) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==2) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==3) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==4) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==5) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+		</tr>
+		<tr>
+			<td><span class="cn_label">Aktionen:</span></td>
+			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=1">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=1">Verkauforder erstellen</a> </c:if></td>
+			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=2">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=2">Verkauforder erstellen</a> </c:if></td>
+			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=3">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=3">Verkauforder erstellen</a> </c:if></td>
+			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=4">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=4">Verkauforder erstellen</a> </c:if></td>
+			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=5">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=5">Verkauforder erstellen</a> </c:if></td>
+		</tr>
+	</c:if>
 	<tr><td colspan="6"><hr/></td></tr>
 </c:forEach>
 </table>

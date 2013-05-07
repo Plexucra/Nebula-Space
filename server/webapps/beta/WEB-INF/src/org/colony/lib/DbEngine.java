@@ -7,6 +7,18 @@ import java.sql.SQLException;
 
 public class DbEngine
 {
+	public static void close(Connection c)
+	{
+		try
+		{
+			if(c!=null)
+				c.close();
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
 	public static String generateQsForIn(int numQs)
 	{
 	    StringBuffer items = new StringBuffer(numQs*5);
@@ -18,17 +30,21 @@ public class DbEngine
 	    return items.toString();
 	}
 
-	public static void exec(Connection c,String sql, int... p) throws SQLException
+	public static int exec(Connection c,String sql, int... p) throws SQLException
 	{
 		PreparedStatement ps = c.prepareStatement(Sql.get(sql));
 		if(p!=null)
 			for(int i =0; i< p.length; i++)
 				ps.setInt(i+1, p[i]);
 //		System.out.println("exec: "+ps.toString());
-		ps.executeUpdate();
+		int result = ps.executeUpdate();
 		ps.close();
+		return result;
 	}
-	
+	public static Connection open() throws SQLException
+	{
+		return getConnection();
+	}
 	public static Connection getConnection() throws SQLException
 	{
 		Connection conn = null;

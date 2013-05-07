@@ -1,10 +1,11 @@
+<%@page import="org.colony.service.GebaeudeService"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="include/page-header.jsp" %>
 
 <div>
 	<h3>Immobilienübersicht:</h3>
 	<%
-	request.setAttribute("gebaeude",S.s().getNutzerGebaeude(s.getNutzer()));
+	request.setAttribute("gebaeude", GebaeudeService.getNutzerGebaeude(s.getNutzer()));
 	%>
 	<table>
 		<tr>

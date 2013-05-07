@@ -1,3 +1,4 @@
+<%@page import="org.colony.lib.Cache"%>
 <%@page import="org.colony.data.Flotte"%>
 <%@page import="org.colony.data.Geschwader"%>
 <%@page import="org.colony.service.PlanetService"%>
@@ -120,7 +121,7 @@
 		{
 			int posX = s.getInt("x");
 			int posY = s.getInt("y");
-			for(Planet p : S.s().getPlaneten().values())
+			for(Planet p : Cache.get().getPlaneten().values())
 			{
 				if(posX==p.getX() && posY==p.getY())
 				{

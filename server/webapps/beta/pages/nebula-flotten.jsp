@@ -4,7 +4,7 @@
 <div>
 	<h3>Flottenübersicht:</h3>
 	<%
-	request.setAttribute("flotten",FlottenService.getFlotten(S.s().getNutzer(session)));
+	request.setAttribute("flotten",FlottenService.getFlotten(NutzerService.getNutzer(session)));
 	%>
 	<div class="${ns}_flottenliste">
 		<table>

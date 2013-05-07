@@ -1,3 +1,5 @@
+<%@page import="org.colony.lib.Cache"%>
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.data.Typ"%>
 <%@page import="org.colony.data.Modell"%>
 <%@ page pageEncoding="UTF-8"%>
@@ -34,13 +36,13 @@
 	else
 	{
 	%>
-	Bauplatzkosten: <%= ContextListener.getService().getNutzer(session).getBauplatzKosten() %><br/>
+	Bauplatzkosten: <%= NutzerService.getNutzer(session).getBauplatzKosten() %><br/>
 	<%
 	}%>
 	
 		<%
 		Typ lastTyp = null;
-		for( Modell m : ContextListener.getService().getModellListe() )
+		for( Modell m : Cache.get().getModellListe() )
 		{
 			if(m.getTyp()!=lastTyp)
 			{
@@ -51,14 +53,14 @@
 			}
 			lastTyp = m.getTyp();
 			
-			int kosten = m.getBaukosten()+ContextListener.getService().getNutzer(session).getBauplatzKosten();
+			int kosten = m.getBaukosten() + NutzerService.getNutzer(session).getBauplatzKosten();
 			if("true".equals(request.getParameter("umbau")))
 				kosten = m.getBaukosten();
 			
 // 			out.println("<br/>");
 			out.println("<table><tr><td> <img src='../resources/modelle/"+m.getId()+"/thumbnail.gif'/></td><td>"+m.getBezeichnung()+"<br/>");
 			out.println("Kapazität: "+m.getKapazitaet());
-			out.println("<br/>Kosten:  <span class='" + (kosten < ContextListener.getService().getNutzer(session).getKontostand()?"dn_bezahlbar":"dn_unbezahlbar") + "'>"+kosten+"</span>");
+			out.println("<br/>Kosten:  <span class='" + (kosten < NutzerService.getNutzer(session).getKontostand()?"dn_bezahlbar":"dn_unbezahlbar") + "'>"+kosten+"</span>");
 			out.println(" <a href='javascript:;' data_id='"+m.getId()+"'> <br/>Hier bauen</a> ("+m.getStockwerke()+" x "+m.getBreite()+" x "+m.getTiefe()+") <br/>");
 			out.println("<br/>");
 			if(m.getProdukt()!=null)

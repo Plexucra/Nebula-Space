@@ -88,6 +88,15 @@ public class Nutzer
 		return kontostand;
 	}
 
+	public void decreaseKontostand(long l)
+	{
+		this.kontostand -=l;
+	}
+
+	public void increaseKontostand(long l)
+	{
+		this.kontostand +=l;
+	}
 	public void setKontostand(long kontostand)
 	{
 		this.kontostand = kontostand;

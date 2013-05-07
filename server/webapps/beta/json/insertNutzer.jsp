@@ -1,3 +1,4 @@
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.data.Nutzer"%>
 <%@page import="java.util.logging.Level"%>
 <%@page import="java.util.logging.Logger"%>
@@ -13,8 +14,8 @@ try
 	nutzer.setKey(request.getParameter("key"));
 	nutzer.setHeimatPlanetId(Integer.parseInt(request.getParameter("planetId")));
 	
-	ContextListener.getService().insertNutzer(nutzer);
-	session.setAttribute("userId", ContextListener.getService().getNutzerByKey(request.getParameter("key")).getId());
+	NutzerService.insertNutzer(nutzer);
+	session.setAttribute("userId", NutzerService.getNutzerByKey(request.getParameter("key")).getId());
 	out.println("{\"success\":true}");
 }
 catch(Exception ex)

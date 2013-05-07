@@ -32,6 +32,7 @@ public class Sql
 			map.put("NachrichtService.getUngeleseneSystemNachrichten","select * from nachricht where nutzerIdSender = 0 and gelesen = 0 and nutzerIdEmpfaenger = ?");
 			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text, datumGesendet) values (?,?,?,?,?,NOW())");
 			map.put("AllianzService.getAllianzen","select * from allianz");
+			map.put("NutzerService.insertLager","insert into lager (nutzerId, planetId, ress1, ress2, ress3, ress4, ress5) values (?,?,0,0,0,0,0)");
 		}
 		return map;
 	}

@@ -1,3 +1,5 @@
+<%@page import="org.colony.service.GebaeudeService"%>
+<%@page import="org.colony.service.NutzerService"%>
 <%@page import="org.colony.lib.ContextListener"%>
 <%@page import="org.colony.data.Gebaeude"%>
 <%@page import="java.util.logging.Level"%>
@@ -18,8 +20,8 @@
 	try
 	{
 		Gebaeude g = new Gebaeude();
-		ContextListener.getService().destroyGebaeude(
-			ContextListener.getService().getNutzer(session), 
+		GebaeudeService.destroyGebaeude(
+			NutzerService.getNutzer(session), 
 			Integer.parseInt(request.getParameter("x")), 
 			Integer.parseInt(request.getParameter("y")) );
 		out.print("{}");

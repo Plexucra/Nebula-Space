@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.colony.data.Allianz;
 import org.colony.data.Nutzer;
+import org.colony.service.NutzerService;
 
 public class S
 {
@@ -28,11 +29,11 @@ public class S
 	}
 	public Allianz getAllianz()
 	{
-		return service().getNutzer(request.getSession()).getAllianz();
+		return NutzerService.getNutzer(request.getSession()).getAllianz();
 	}
 	public Nutzer getNutzer()
 	{
-		return service().getNutzer(request.getSession());
+		return NutzerService.getNutzer(request.getSession());
 	}
 	public Ticker getTicker()
 	{
@@ -46,6 +47,14 @@ public class S
 
 	public boolean getBool(String parameterName)
 	{
+		return Boolean.getBoolean(request.getParameter(parameterName));
+	}
+
+	public boolean getBoolean(String parameterName)
+	{
+		String s = request.getParameter(parameterName);
+		if("0".equals(s)) return false;
+		if("1".equals(s)) return true;
 		return Boolean.getBoolean(request.getParameter(parameterName));
 	}
 

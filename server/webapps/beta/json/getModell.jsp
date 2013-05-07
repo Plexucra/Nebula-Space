@@ -1,3 +1,4 @@
+<%@page import="org.colony.lib.Cache"%>
 <%@ include file="include/init.jsp" %>
 <%@ page pageEncoding="UTF-8"%>
 <%@page import="org.colony.data.Modell"%>
@@ -6,7 +7,7 @@
 
 <%
 StringBuffer sb = null;
-for(Modell m : ContextListener.getService().getModelle().values())
+for(Modell m : Cache.get().getModelle().values())
 {
 	if(sb==null) sb = new StringBuffer("[");
 	else sb.append(",");

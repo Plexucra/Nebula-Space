@@ -3,12 +3,9 @@ package org.colony.lib;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpSession;
 
 import org.colony.data.Einfluss;
 import org.colony.data.Flotte;
@@ -18,6 +15,8 @@ import org.colony.data.Nutzer;
 import org.colony.data.Planet;
 import org.colony.data.Schiffsmodell;
 import org.colony.service.FlottenService;
+import org.colony.service.GebaeudeService;
+import org.colony.service.HandelService;
 import org.colony.service.SchlachtService;
 
 public class Service
@@ -83,7 +82,7 @@ public class Service
 			//------------------------- Gebäude updaten --------------------------
 			for(Planet p : getCache().getPlaneten().values())
 			{
-				List<Gebaeude> relGebs = getRelevanteGebaeude(p);
+				List<Gebaeude> relGebs = GebaeudeService.getRelevanteGebaeude(p);
 //				List<Gebaeude> planetGebs = getGebaeude(p);
 				List<Gebaeude> changedPlanetGebs = new ArrayList<Gebaeude>(100);
 				if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
@@ -130,7 +129,7 @@ public class Service
 
 				}
 				if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
-				updateGebaeude(c, changedPlanetGebs);
+				GebaeudeService.updateGebaeude(c, changedPlanetGebs);
 				c.commit();
 			}
 			//------------------------- Globale updates --------------------------
@@ -141,6 +140,7 @@ public class Service
 			statement.executeBatch();
 			statement.close();
 			c.commit();
+			HandelService.mergeOrdersToTransaktionen(c);
 			getCache().loadNutzer(c);
 			c.commit();
 		}
@@ -247,146 +247,7 @@ public class Service
 //		planetPs.close();
 //		s.setBewohner(planetBewohner);
 //	}
-	
-	public void updateGebaeude(Connection c, List<Gebaeude> gebs) throws SQLException
-	{
-		for(Gebaeude g : gebs)
-		{
-			PreparedStatement ps = c.prepareStatement("update gebaeude set auslastung = ?, ausgaben = ?, einnahmen = ?, `alter` = ? where id = ?");
-			ps.setInt(1, g.getAuslastung());
-			ps.setInt(2, g.getAusgaben());
-			ps.setInt(3, g.getEinnahmen());
-			ps.setInt(4, g.getAlter());
-			ps.setInt(5, g.getId());
-			ps.executeUpdate();
-			ps.close();
-		}
-	}
 
-
-	
-	
-	public Gebaeude getGebaeude(Planet p, int x, int y) throws SQLException
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			return getGebaeude(p, x, y, c);
-		}
-		finally { c.close(); }
-	}
-	public Gebaeude getGebaeude(Planet p, int x, int y, Connection c) throws SQLException
-	{
-		Gebaeude results = null;
-		PreparedStatement ps;
-		ResultSet rs;
-		// ----------------------------------------------------------------------------------------------------
-		// ----------------------------------------- Gebäude -----------------------------------
-		// ----------------------------------------------------------------------------------------------------
-		StringBuffer sb = new StringBuffer(200);
-		sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
-		sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
-		sb.append("	grundstueck.x as grundstueckX, ");
-		sb.append("	grundstueck.y as grundstueckY, ");
-		sb.append("	grundstueck.planetId as planetId, ");
-		sb.append("	gebaeude.modellId as modellId, ");
-		sb.append("	grundstueck.planetId as planetId ");
-		sb.append("	from gebaeude ");
-		sb.append("	join modell on (modell.id = gebaeude.modellId) ");
-		sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-		sb.append("	where grundstueck.x = ?");
-		sb.append("	and grundstueck.y = ?");
-		sb.append("	and planetId = ?");
-		ps = c.prepareStatement(sb.toString());
-		ps.setInt(1, x);
-		ps.setInt(2, y);
-		ps.setInt(3, p.getId());
-		if(debug) System.out.println(ps.toString()+"\n\n x:"+x+" y:"+y);
-
-		rs = ps.executeQuery();
-		if(rs != null && rs.next())
-		{
-			Gebaeude g = new Gebaeude(rs);
-			results = g;
-		}
-		if(rs!=null) rs.close();
-		ps.close();
-		return results;
-	}
-	
-	public List<Gebaeude> getGebaeude(Planet s) throws Exception
-	{
-		List<Gebaeude> results = new ArrayList<Gebaeude>();
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			PreparedStatement ps;
-			ResultSet rs;
-			// ----------------------------------------------------------------------------------------------------
-			// ----------------------------------------- Gebäude -----------------------------------
-			// ----------------------------------------------------------------------------------------------------
-			StringBuffer sb = new StringBuffer(200);
-			sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
-			sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
-			sb.append("	grundstueck.x as grundstueckX, ");
-			sb.append("	grundstueck.y as grundstueckY, ");
-			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.planetId as planetId ");
-			sb.append("	from gebaeude ");
-			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
-			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where planetId = ?");
-			ps = c.prepareStatement(sb.toString());
-			
-			ps.setInt(1, s.getId());
-			rs = ps.executeQuery();
-			while(rs != null && rs.next())
-			{
-				Gebaeude g = new Gebaeude(rs);
-				results.add(g);
-			}
-			if(rs!=null) rs.close();
-			ps.close();
-		}
-		finally { c.close(); }
-		return results;
-	}
-	public Gebaeude getGebaeude(int id) throws Exception
-	{
-		Gebaeude g=null;
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			PreparedStatement ps;
-			ResultSet rs;
-			// ----------------------------------------------------------------------------------------------------
-			// ----------------------------------------- Gebäude -----------------------------------
-			// ----------------------------------------------------------------------------------------------------
-			StringBuffer sb = new StringBuffer(200);
-			sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
-			sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
-			sb.append("	grundstueck.x as grundstueckX, ");
-			sb.append("	grundstueck.y as grundstueckY, ");
-			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.planetId as planetId ");
-			sb.append("	from gebaeude ");
-			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
-			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where gebaeude.id = ?");
-			
-			ps = c.prepareStatement(sb.toString());
-			ps.setInt(1, id);
-			rs = ps.executeQuery();
-			if (rs != null && rs.next())
-			{
-				g = new Gebaeude(rs);
-				rs.close();
-			}
-			ps.close();
-		}
-		finally { c.close(); }
-		return g;
-	}
 
 	public Service() throws Exception
 	{
@@ -404,7 +265,7 @@ public class Service
 			if(f.getaObjektart()==1 && f.getaId()==g.getModell().getTyp().getId())
 				results.add(f.clone());
 		}
-		List<Gebaeude> gebs = relevanteGebs!=null ? relevanteGebs : getRelevanteGebaeude(g);
+		List<Gebaeude> gebs = relevanteGebs!=null ? relevanteGebs : GebaeudeService.getRelevanteGebaeude(g);
 		boolean selbstEinflussWurdeBerechnet = false;
 		float selbstEinfluss = 0;
 		
@@ -475,46 +336,7 @@ public class Service
 		}
 		return results;
 	}
-	synchronized public String insertNutzer(Nutzer nutzer) throws Exception
-	{
-		Connection c = null;
-		try
-		{
-			c = DbEngine.getConnection();
-			PreparedStatement ps;
-//			
-//			int planetId = 0;
-//			ps = c.prepareStatement("SELECT count(heimatPlanetId) as anzahlNutzer, heimatPlanetId FROM nutzer group by heimatPlanetId order by anzahlNutzer limit 1");
-//			ResultSet rs = ps.executeQuery();
-//			if(rs!=null && rs.next())
-//			{
-//				planetId = rs.getInt("heimatPlanetId");
-//				rs.close();
-//			}
-//			ps.close();
-			
-			ps = c.prepareStatement("insert into nutzer (`key`,`alias`,heimatPlanetId) values (?,?,?)");
-			ps.setString(1, nutzer.getKey());
-			ps.setString(2, nutzer.getAlias());
-			ps.setInt(3, nutzer.getHeimatPlanetId());
-			ps.executeUpdate();
-			ps.close();
-			
-			c.commit();
-			getCache().loadNutzer(c);
 
-			//Damit man stehts was zum anbauen hat..
-			if(getGebaeude( getCache().getPlanet(nutzer.getHeimatPlanetId()), 0, 0, c)==null)
-				insertGebaeude(getNutzerByKey(nutzer.getKey()), 0, 0, 1);
-		}
-		catch(Exception ex)
-		{
-			c.rollback();
-			throw ex;
-		}
-		finally { c.close(); }
-		return null;
-	}
 	synchronized public Flotte insertHeimatflotte(Connection c, Nutzer n) throws Exception
 	{
 		Flotte result = null;
@@ -536,180 +358,6 @@ public class Service
 		return result;
 	}
 
-
-	public void destroyGebaeude(Nutzer nutzer, int x, int y) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			Gebaeude g = getGebaeude( nutzer.getHeimatPlanet(), x, y, c);
-			if(g==null) throw new Exception("Das zu zerstörende Gebäude konnte nicht gefunden werden.");
-
-			if(g.getBesitzer().getId()!=nutzer.getId())
-				throw new Exception("Das zu löschende Gebäude ist nicht Ihr Eigentum.");
-			
-			PreparedStatement ps = c.prepareStatement("delete from gebaeude where id = ?");
-			ps.setInt(1, g.getId());
-			ps.executeUpdate();
-			ps.close();
-			c.commit();
-		}
-		catch(Exception ex)
-		{
-			c.rollback();
-			throw ex;
-		}
-		finally
-		{
-			if(c!=null) c.close();
-		}
-	}
-	synchronized public void insertGebaeude(Nutzer nutzer, int x, int y, int modellId) throws Exception
-	{
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			Gebaeude g = getGebaeude(nutzer.getHeimatPlanet(), x,y,c);
-			int kosten =  getCache().getModell(modellId).getBaukosten();
-			if(g==null) kosten += nutzer.getBauplatzKosten();
-			if(kosten > nutzer.getKontostand())
-				throw new Exception("Nicht genug Geld für diese Investition");
-			if(g!=null)
-			{
-				if(g.getBesitzer().getId()!=nutzer.getId())
-					throw new Exception("Das neu zu bebauende Gebäude ist nicht Ihr Eigentum.");
-				
-				PreparedStatement ps = c.prepareStatement("update gebaeude set modellId=?, besitzerNutzerId=?, `alter`=? where id = ?");
-				ps.setInt(1, modellId);
-				ps.setInt(2, nutzer.getId());
-				ps.setInt(3, -1 *  getCache().getModell(modellId).getBauzeit() );
-				ps.setInt(4, g.getId());
-				ps.executeUpdate();
-				ps.close();
-				
-				ps = c.prepareStatement("update nutzer set kontostand=kontostand-? where id = ?");
-				ps.setInt(1, kosten);
-				ps.setInt(2, nutzer.getId());
-				ps.executeUpdate();
-				ps.close();
-				
-				c.commit();
-				nutzer.setKontostand(nutzer.getKontostand()-kosten);
-			}
-			else
-			{
-				PreparedStatement ps = c.prepareStatement("INSERT INTO gebaeude (modellId, besitzerNutzerId, `alter`) VALUES (?, ?, ?)");
-				ps.setInt(1, modellId);
-				ps.setInt(2, nutzer.getId());
-				ps.setInt(3, -1 *  getCache().getModell(modellId).getBauzeit() );
-				ps.executeUpdate();
-				ps.close();
-	
-				ps = c.prepareStatement("INSERT INTO grundstueck (gebaeudeId, planetId, x, y) VALUES (LAST_INSERT_ID(), ?, ?, ?)");
-				ps.setInt(1, nutzer.getHeimatPlanetId());
-				ps.setInt(2, x);
-				ps.setInt(3, y);
-				ps.executeUpdate();
-				ps.close();
-				
-				ps = c.prepareStatement("update nutzer set kontostand=kontostand-? where id = ?");
-				ps.setInt(1, kosten);
-				ps.setInt(2, nutzer.getId());
-				ps.executeUpdate();
-				ps.close();
-				
-				c.commit();
-				nutzer.setKontostand(nutzer.getKontostand()-kosten);
-//				nutzer.setAnzahlGebaeude(nutzer.getAnzahlGebaeude()+1);
-			}
-		}
-		catch(Exception ex)
-		{
-			c.rollback();
-			throw ex;
-		}
-		finally
-		{
-			if(c!=null) c.close();
-		}
-	}
-	
-	public List<Gebaeude> getRelevanteGebaeude(Gebaeude forG) throws Exception
-	{
-		return getRelevanteGebaeude(forG.getPlanet());
-	}
-	public List<Gebaeude> getRelevanteGebaeude(Planet s) throws Exception
-	{
-		List<Gebaeude> results = new ArrayList<Gebaeude>();
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			
-			PreparedStatement ps;
-			ResultSet rs;
-			// ----------------------------------------------------------------------------------------------------
-			// ----------------------------------------- Gebäude -----------------------------------
-			// ----------------------------------------------------------------------------------------------------
-			StringBuffer sb = new StringBuffer(200);
-			sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
-			sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
-			sb.append("	grundstueck.x as grundstueckX, ");
-			sb.append("	grundstueck.y as grundstueckY, ");
-			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.planetId as planetId ");
-			sb.append("	from gebaeude ");
-			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
-			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where `alter` >= 0 and grundstueck.planetId = ? ");
-			ps = c.prepareStatement(sb.toString());
-			ps.setInt(1, s.getId());
-
-			rs = ps.executeQuery();
-			while(rs != null && rs.next())
-			{
-				Gebaeude g = new Gebaeude(rs);
-				results.add(g);
-			}
-			if(rs!=null) rs.close();
-			ps.close();
-		}
-		finally { c.close(); }
-		return results;	
-	}
-	public List<Gebaeude> getNutzerGebaeude(Nutzer n) throws Exception
-	{
-		List<Gebaeude> results = new ArrayList<Gebaeude>();
-		Connection c = DbEngine.getConnection();
-		try
-		{
-			PreparedStatement ps;
-			ResultSet rs;
-			StringBuffer sb = new StringBuffer(200);
-			sb.append("	select gebaeude.id as id, `alter`, ausgaben, auslastung, gebaeude.besitzerNutzerId as besitzerNutzerId, ");
-			sb.append("	effizienz, einnahmen, grundstueck.id as grundstueckId, ");
-			sb.append("	grundstueck.x as grundstueckX, ");
-			sb.append("	grundstueck.y as grundstueckY, ");
-			sb.append("	gebaeude.modellId as modellId, ");
-			sb.append("	grundstueck.planetId as planetId ");
-			sb.append("	from gebaeude ");
-			sb.append("	join modell on (modell.id = gebaeude.modellId) ");
-			sb.append("	join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) ");
-			sb.append("	where gebaeude.besitzerNutzerId = ? order by (cast(einnahmen AS SIGNED)-cast(ausgaben AS SIGNED)) ");
-			ps = c.prepareStatement(sb.toString());
-			ps.setInt(1, n.getId());
-
-			rs = ps.executeQuery();
-			while(rs != null && rs.next())
-			{
-				Gebaeude g = new Gebaeude(rs);
-				results.add(g);
-			}
-			if(rs!=null) rs.close();
-			ps.close();
-		}
-		finally { c.close(); }
-		return results;	
-	}
 
 	public float getEffizienz(Gebaeude g, List<Gebaeude> relevanteGebs) throws Exception
 	{
@@ -736,17 +384,6 @@ public class Service
 		return 30;
 	}
 
-	public Nutzer getNutzerByKey(String key) throws Exception
-	{
-		for(Nutzer n :  getCache().getNutzer().values())
-			if(key.equals(n.getKey()))
-				return n;
-		return null;
-	}
-	public Nutzer getNutzer(HttpSession session)
-	{
-		return getCache().getNutzer((Integer)session.getAttribute("userId"));
-	}
 
 
 
