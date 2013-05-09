@@ -122,7 +122,7 @@ function draw()
 				else if(data[i].besitzerNutzerId==userId)
 				{
 //					Eigene Gebaeude markieren
-					grd.addColorStop(0,"rgba(0, 255, 10, 0.5)");
+					grd.addColorStop(0,"rgba(0, 255, 10, 0.4)");
 					grd.addColorStop(1,"rgba(0, 255, 10, 0.0)");
 					ctx.fillStyle = grd;
 					ctx.fillRect ( (data[i].x-vX)*zoom-2, (data[i].y-vY)*zoom-2, zoom-vBorder+4, zoom-vBorder+4);

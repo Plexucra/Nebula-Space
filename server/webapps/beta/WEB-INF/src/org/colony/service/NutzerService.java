@@ -2,9 +2,11 @@ package org.colony.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpSession;
 
+import org.colony.data.Lager;
 import org.colony.data.Nutzer;
 import org.colony.data.Planet;
 import org.colony.lib.Cache;
@@ -27,6 +29,32 @@ public class NutzerService
 	public static Nutzer getNutzer(HttpSession session)
 	{
 		return Cache.get().getNutzer((Integer)session.getAttribute("userId"));
+	}
+	
+	public static Lager getLager(int nutzerId, int planetId)
+	{
+		Connection c = null;
+		try
+		{
+			c = DbEngine.open();
+			return getLager(nutzerId, planetId, c);
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		finally { DbEngine.close(c); }
+		return null;
+	}
+	
+	public static Lager getLager(int nutzerId, int planetId, Connection c) throws SQLException
+	{
+		Query q = new Query("select * from lager where nutzerId = ? and planetId = ?", c);
+		q.addParameter(nutzerId);
+		q.addParameter(planetId);
+		if(q.nextResult())
+			return new Lager(q.getResult());
+		return null;
 	}
 
 	synchronized public static String insertNutzer(Nutzer nutzer) throws Exception

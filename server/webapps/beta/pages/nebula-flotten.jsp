@@ -1,3 +1,4 @@
+<%@page import="org.colony.data.Flotte"%>
 <%@page import="org.colony.service.FlottenService"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="include/page-header.jsp" %>
@@ -24,7 +25,8 @@
 					</td>
 					<td><c:if test="${row.sprungAufladung >= 0}">${(s.ticker.duration * row.sprungAufladung)/1000} Sek.</c:if></td>
 					<td>
-						<c:forEach items="${ row.geschwader }" var="geschwader">
+						<% pageContext.setAttribute("t_geschwader", FlottenService.getGeschwader( (Flotte)pageContext.getAttribute("row"))); %>
+						<c:forEach items="${ t_geschwader }" var="geschwader">
 							${ geschwader.anzahl } 
 							${ geschwader.schiffsmodell.bezeichnung }<br/>
 						</c:forEach>

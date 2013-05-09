@@ -12,6 +12,7 @@ public class Order
 	int volumen;
 	int ress;
 	int planetId;
+
 	public Order(ResultSet rs) throws SQLException
 	{
 		id = rs.getInt("id");
@@ -22,6 +23,12 @@ public class Order
 		ress = rs.getInt("ress");
 		planetId = rs.getInt("planetId");
 	}
+
+	public int getKosten()
+	{
+		return (int) Math.ceil(getKurs() * (float) getVolumen());
+	}
+
 	public int getId()
 	{
 		return id;
@@ -81,10 +88,12 @@ public class Order
 	{
 		this.ress = ress;
 	}
+
 	public int getPlanetId()
 	{
 		return planetId;
 	}
+
 	public void setPlanetId(int planetId)
 	{
 		this.planetId = planetId;

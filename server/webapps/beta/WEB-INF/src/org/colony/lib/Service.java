@@ -17,12 +17,13 @@ import org.colony.data.Schiffsmodell;
 import org.colony.service.FlottenService;
 import org.colony.service.GebaeudeService;
 import org.colony.service.HandelService;
+import org.colony.service.NachrichtService;
 import org.colony.service.SchlachtService;
 
 public class Service
 {
 
-	public boolean debug = false;
+	public boolean debug = true;
 	public Cache cache;
 
 	synchronized public void updateTick() throws Exception
@@ -76,6 +77,7 @@ public class Service
 		    statement.close();
 		    SchlachtService.updateSchlachten(c);
 		    c.commit();
+			if(debug) {System.out.println("updateTick schlachtenberechung milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 
 			
 		    DbEngine.exec(c, "update gebaeude set `alter` = `alter` + 1");
@@ -85,7 +87,6 @@ public class Service
 				List<Gebaeude> relGebs = GebaeudeService.getRelevanteGebaeude(p);
 //				List<Gebaeude> planetGebs = getGebaeude(p);
 				List<Gebaeude> changedPlanetGebs = new ArrayList<Gebaeude>(100);
-				if(debug) {System.out.println("updateTick3 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 				for(Gebaeude g : relGebs)
 				{
 					int t_ausgaben		= g.getAusgaben();
@@ -109,15 +110,26 @@ public class Service
 //					}
 					if(g.getModell().getTyp().getId() == 7 && g.getAuslastung()==g.getModell().getKapazitaet())
 					{
-						List<Flotte> hFlotten = FlottenService.getHeimatFlotten(g.getBesitzer(),c);
-						Flotte f = null; 
-						if(hFlotten!=null && hFlotten.size()>0) f = hFlotten.get(0);
-						else f = insertHeimatflotte(c, g.getBesitzer());
 						Schiffsmodell neuesSchiff = null;
 						for(Schiffsmodell sm : getCache().getSchiffsmodelle().values())
 							if(sm.getFabrikModellId() == g.getModell().getId())
 								neuesSchiff = sm;
-						FlottenService.insertFlottenschiff(c, f,neuesSchiff);
+						if(
+								DbEngine.exec(c, "update lager set ress1=ress1-?, ress2=ress2-?, ress3=ress3-?, ress4=ress4-?, ress5=ress5-? where nutzerId = ? and planetId=? and ress1 >= ? and ress2 >= ? and ress3 >= ? and ress4 >= ? and ress5 >= ?",
+								neuesSchiff.getRess1Kosten(),neuesSchiff.getRess2Kosten(),neuesSchiff.getRess3Kosten(),neuesSchiff.getRess4Kosten(),neuesSchiff.getRess5Kosten(),
+								g.getBesitzer().getId(), p.getId(),
+								neuesSchiff.getRess1Kosten(),neuesSchiff.getRess2Kosten(),neuesSchiff.getRess3Kosten(),neuesSchiff.getRess4Kosten(),neuesSchiff.getRess5Kosten() ) == 0)
+						{
+							NachrichtService.sendSystemNachricht(c, g.getBesitzer(), NachrichtService.TYP_KOLONIE, "Auf Grund fehlender Rohstoffe konnte ein Raumschiff nicht gebaut werden. ("+neuesSchiff.getBezeichnung()+")");
+						}
+						else
+						{
+							List<Flotte> hFlotten = FlottenService.getHeimatFlotten(g.getBesitzer(),c);
+							Flotte f = null; 
+							if(hFlotten!=null && hFlotten.size()>0) f = hFlotten.get(0);
+							else f = insertHeimatflotte(c, g.getBesitzer());
+							FlottenService.insertFlottenschiff(c, f,neuesSchiff);
+						}
 					}
 					
 					if(
@@ -128,10 +140,10 @@ public class Service
 						changedPlanetGebs.add(g);
 
 				}
-				if(debug) {System.out.println("updateTick4 milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 				GebaeudeService.updateGebaeude(c, changedPlanetGebs);
 				c.commit();
 			}
+			if(debug) {System.out.println("updateTick gebäudeberechnung milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			//------------------------- Globale updates --------------------------
 			statement = c.createStatement();
 			statement.addBatch("update flotte set sprungAufladung = sprungAufladung - 1 where sprungAufladung >= 0;");
@@ -140,8 +152,13 @@ public class Service
 			statement.executeBatch();
 			statement.close();
 			c.commit();
+			if(debug) {System.out.println("updateTick sonstige updates milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			HandelService.mergeOrdersToTransaktionen(c);
+			if(debug) {System.out.println("updateTick transaktionmerge milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
+			HandelService.insertStaatlicheOrders(c);
+			if(debug) {System.out.println("updateTick insertStaatlicheOrders milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			getCache().loadNutzer(c);
+			if(debug) {System.out.println("updateTick loadNutzer milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			c.commit();
 		}
 		catch(Exception ex)

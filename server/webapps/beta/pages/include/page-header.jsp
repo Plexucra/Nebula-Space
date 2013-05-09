@@ -122,6 +122,8 @@
 						
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_modules_handel">
 							<a id="menuPunkt2_pages_modules_handel_uebersicht" href='${up}/pages/modules/handel/uebersicht.jsp'>Handelsplätze</a><span> | </span>
+							<a id="menuPunkt2_pages_modules_handel_order" href='${up}/pages/modules/handel/order.jsp'>Order erstellen</a><span> | </span>
+							<a id="menuPunkt2_pages_modules_handel_transaktionen" href='${up}/pages/modules/handel/transaktionen.jsp'>letzte Transaktionen</a><span> | </span>
 						</div>
 
 

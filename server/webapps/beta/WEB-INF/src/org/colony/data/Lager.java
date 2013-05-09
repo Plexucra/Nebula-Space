@@ -1,5 +1,8 @@
 package org.colony.data;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Lager
 {
 	int id;
@@ -10,6 +13,18 @@ public class Lager
 	long ress3;
 	long ress4;
 	long ress5;
+
+	public Lager(ResultSet rs) throws SQLException
+	{
+		id = rs.getInt("id");
+		planetId = rs.getInt("planetId");
+		nutzerId = rs.getInt("nutzerId");
+		ress1 = rs.getLong("ress1");
+		ress2 = rs.getLong("ress2");
+		ress3 = rs.getLong("ress3");
+		ress4 = rs.getLong("ress4");
+		ress5 = rs.getLong("ress5");
+	}
 
 	public int getId()
 	{

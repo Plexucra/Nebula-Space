@@ -223,7 +223,7 @@
 </c:if>
 
 <c:if test="${ not empty selModellId }">
-	<h3 class="${  (param['selModellId'] ne 'false' and not empty param['selModellId'])?'dn_active':'' }">Ausgeählter Bauplan</h3>
+	<h3 class="${  (  empty g or (param['selModellId'] ne 'false' and not empty param['selModellId'])   )?'dn_active':'' }">Ausgewählter Bauplan</h3>
 	<div>
 		<%@ include file="grundstueckDetail-fragment-bauplan.jsp" %>
 	</div>

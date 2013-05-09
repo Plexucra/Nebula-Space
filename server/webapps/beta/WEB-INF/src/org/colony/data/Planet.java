@@ -33,6 +33,15 @@ public class Planet
 	int ress4Vorkommen;
 	int ress5Vorkommen;
 	
+	public int getRessVorkommen(int i)
+	{
+		if(i==1) return ress1Vorkommen;
+		if(i==2) return ress2Vorkommen;
+		if(i==3) return ress3Vorkommen;
+		if(i==4) return ress4Vorkommen;
+		if(i==5) return ress5Vorkommen;
+		return -1;
+	}
 
 	public Allianz getAllianz()
 	{

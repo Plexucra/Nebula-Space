@@ -1,3 +1,5 @@
+<%@page import="org.colony.data.Transaktion"%>
+<%@page import="org.colony.data.Lager"%>
 <%@page import="org.colony.data.Order"%>
 <%@page import="org.colony.service.HandelService"%>
 <%@page import="java.util.ArrayList"%>
@@ -8,60 +10,90 @@
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="/pages/include/page-header.jsp" %>
 
-<h1>Handelsplätze</h1>
-<% request.setAttribute("plist",PlanetService.getPlaneten()); %>
-
 <%
+request.setAttribute("plist",PlanetService.getPlaneten()); 
 List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 %>
 <table>
-	<tr>
-		<th/>
-		<th><%= HandelService.ress1Name %></th>
-		<th><%= HandelService.ress2Name %></th>
-		<th><%= HandelService.ress3Name %></th>
-		<th><%= HandelService.ress4Name %></th>
-		<th><%= HandelService.ress5Name %></th>
-	</tr>
 <c:forEach items="${ plist }" var="row">
-	<tr>
-		<td><span class="cn_label">Handelsplatz:</span></td>
-		<td colspan="5">
-			<c:choose>
-				<c:when test="${ row.allianz.id ne s.allianz.id }">
-					<span class="cn_label">${ row.name } </span><br/>
-					<span class="cn_label">(gesperrt durch Handelsembargo von ${ row.allianz.bezeichnung})</span>
-				</c:when>
-				<c:otherwise>
-					${ row.name }
-				</c:otherwise>
-			</c:choose>
-		</td>
-	</tr>
 	<c:if test="${ row.allianz.id eq s.allianz.id }">
+		<tr>
+			<td>
+<!-- 				<span class="cn_label">Handelsplatz:</span> -->
+			</td>
+			<td colspan="5">
+				<h1>Handelsplatz: ${ row.name }</h1>
+			</td>
+		</tr>
+		<tr>
+			<th/>
+			<th><%= HandelService.ress1Name %></th>
+			<th><%= HandelService.ress2Name %></th>
+			<th><%= HandelService.ress3Name %></th>
+			<th><%= HandelService.ress4Name %></th>
+			<th><%= HandelService.ress5Name %></th>
+		</tr>
+
+		<%
+			Planet p = (Planet) pageContext.getAttribute("row");
+			Lager l = NutzerService.getLager(s.getNutzer().getId(), p.getId());
+			List<Transaktion> tList = HandelService.getLetzteTransaktionen(p.getId());
+		%>
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
-			<td><span class="cn_label">Fördermenge:</span></td>
-			<td>${row.ress1Vorkommen}</td>
-			<td>${row.ress2Vorkommen}</td>
-			<td>${row.ress3Vorkommen}</td>
-			<td>${row.ress4Vorkommen}</td>
-			<td>${row.ress5Vorkommen}</td>
+			<td><span class="cn_label">Rohstoffförderung <br/>durch Staatskonzerne:</span></td>
+			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess1Vorkommen() ) %>/h</td>
+			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess2Vorkommen() ) %>/h</td>
+			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess3Vorkommen() ) %>/h</td>
+			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess4Vorkommen() ) %>/h</td>
+			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess5Vorkommen() ) %>/h</td>
 		</tr>
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
-			<td><span class="cn_label">Letzter Kurs:</span></td>
-			<td>${row.ress1Vorkommen}</td>
-			<td>${row.ress2Vorkommen}</td>
-			<td>${row.ress3Vorkommen}</td>
-			<td>${row.ress4Vorkommen}</td>
-			<td>${row.ress5Vorkommen}</td>
+			<td><span class="cn_label">Letzter Kurs (Vol.):</span></td>
+			<td><% if(tList!=null) for(Transaktion t : tList) if(t.getRess()==1) out.print(t.getKurs()+" ("+t.getVolumen()+")"); %></td>
+			<td><% if(tList!=null) for(Transaktion t : tList) if(t.getRess()==2) out.print(t.getKurs()+" ("+t.getVolumen()+")"); %></td>
+			<td><% if(tList!=null) for(Transaktion t : tList) if(t.getRess()==3) out.print(t.getKurs()+" ("+t.getVolumen()+")"); %></td>
+			<td><% if(tList!=null) for(Transaktion t : tList) if(t.getRess()==4) out.print(t.getKurs()+" ("+t.getVolumen()+")"); %></td>
+			<td><% if(tList!=null) for(Transaktion t : tList) if(t.getRess()==5) out.print(t.getKurs()+" ("+t.getVolumen()+")"); %></td>
 		</tr>
+		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
+			<td><span class="cn_label">Ihr Lagerstand:</span></td>
+			<td><%= l.getRess1() %></td>
+			<td><%= l.getRess2() %></td>
+			<td><%= l.getRess3() %></td>
+			<td><%= l.getRess4() %></td>
+			<td><%= l.getRess5() %></td>
+		</tr>
+		
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
 			<td><span class="cn_label">Ihre aktuellen Orders:</span></td>
-			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==1) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
-			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==2) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
-			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==3) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
-			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==4) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
-			<td><table> <tr><th>Typ</th><th>Kurs</th><th>Volumen</th></tr><% for(Order o : orders) if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==5) { %><tr> <td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td> <td align="right"><%= o.getKurs() %></td> <td align="right"><%= o.getVolumen() %></td> </tr> <%  } %></table> </td>
+			<%
+				for(int ress = 1; ress<=5; ress++)
+				{
+					%>
+					<td>
+						<table>
+							<tr><th></th><th><span class="cn_label">Typ</span></th><th><span class="cn_label">Kurs</span></th><th><span class="cn_label">Volumen</span></th></tr>
+							<% 
+							for(Order o : orders)
+							{
+								if(o.getPlanetId() == ((Planet) pageContext.getAttribute("row")).getId() && o.getRess()==ress)
+								{
+									%>
+									<tr>
+										<td><a class="cn_delete" href="${up}/pages/modules/handel/order.jsp?action=delete&id=<%=o.getId()%>">X</a></td>
+										<td><%= o.isKauf()?"Kauforder":"Verkauforder" %></td>
+										<td align="right"><%= o.getKurs() %></td>
+										<td align="right"><%= o.getVolumen() %></td>
+									</tr>
+									<%  
+								}
+							}
+							%>
+						</table>
+					</td>
+					<%
+				}
+			%>
 		</tr>
 		<tr>
 			<td><span class="cn_label">Aktionen:</span></td>
@@ -72,6 +104,5 @@ List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=5">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=5">Verkauforder erstellen</a> </c:if></td>
 		</tr>
 	</c:if>
-	<tr><td colspan="6"><hr/></td></tr>
 </c:forEach>
 </table>

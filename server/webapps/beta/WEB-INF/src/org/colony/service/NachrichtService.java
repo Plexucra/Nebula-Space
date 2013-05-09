@@ -16,6 +16,7 @@ public class NachrichtService
 {
 	public static final String cm = "NachrichtService.";
 	public static final int TYP_SCHLACHT = 3;
+	public static final int TYP_KOLONIE = 4;
 	public static final int TYP_NACHRICHT = 1;
 
 	public static void sendNachricht(Connection c, Nutzer sender, Nutzer empfaenger, int typ, String betreff, String text)

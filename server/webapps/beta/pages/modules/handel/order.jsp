@@ -1,3 +1,4 @@
+<%@page import="org.colony.data.Lager"%>
 <%@page import="org.colony.service.HandelService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.colony.data.Planet"%>
@@ -7,8 +8,21 @@
 <%@ page pageEncoding="UTF-8"%>
 <%@ include file="/pages/include/page-header.jsp" %>
 <c:choose>
+	<c:when test="${param['action'] eq 'delete' }">
+		<%
+		try
+		{
+			HandelService.deleteOrder( s.getNutzer(), s.getInt("id") );
+			out.println("Ihre Order wurde gelöscht bzw. zurück genommen.");
+		}
+		catch(Exception ex)
+		{
+			out.println("<div class='ui-state-error'>"+ex.getMessage()+"</div>");
+		}
+		%>
+		<div><a href='${up}/pages/modules/handel/uebersicht.jsp'>Zurück</a></div>
+	</c:when>
 	<c:when test="${param['action'] eq 'save' }">
-		
 		<%
 		try
 		{
@@ -101,11 +115,27 @@
 				<tr>
 					<td>Kurs:</td>
 					<td><input required="required" type="number" name="kurs" value="${ param['kurs'] }" placeholder="0,00"/></td>
+					<td><span id="${ns}_kosten"></span></td>
 				</tr>
 				<tr>
 					<td>Volumen:</td>
 					<td><input required="required" type="number" name="volumen" value="${ param['volumen'] }" title="Bitte nur Ganzzahlen eingeben" placeholder="0"/></td>
-					<td><span id="${ns}_kosten"></span></td>
+					<td>
+						<c:if test="${ not empty param['planetId'] and not empty param['ress'] and param['kauf'] eq '0'}">
+							<%
+							Lager l = NutzerService.getLager(s.getNutzer().getId(), s.getInt("planetId"));
+							if(l!=null)
+							{
+								out.println("<span class='cn_label'>Derzeit im Lager: </span>");
+								if(s.getInt("ress")==1) out.println(l.getRess1());
+								else if(s.getInt("ress")==2) out.println(l.getRess2());
+								else if(s.getInt("ress")==3) out.println(l.getRess3());
+								else if(s.getInt("ress")==4) out.println(l.getRess4());
+								else if(s.getInt("ress")==5) out.println(l.getRess5());
+							}
+							%>
+						</c:if>
+					</td>
 				</tr>
 				<tr>
 					<td/>
