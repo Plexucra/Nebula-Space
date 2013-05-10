@@ -25,6 +25,15 @@ public class Lager
 		ress4 = rs.getLong("ress4");
 		ress5 = rs.getLong("ress5");
 	}
+	public long getRess(int i)
+	{
+		if(i==1) return getRess1();
+		if(i==2) return getRess2();
+		if(i==3) return getRess3();
+		if(i==4) return getRess4();
+		if(i==5) return getRess5();
+		return 0;
+	}
 
 	public int getId()
 	{

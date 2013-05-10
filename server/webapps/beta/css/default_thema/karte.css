@@ -15,7 +15,13 @@
 {
 	cursor:pointer;
 }
-
+._pages_karte .dn_kartenoptionen
+{
+	position:absolute;
+	left:5px;
+	top:5px;
+	background:  rgba(0, 0, 0, .7);
+}
 ._pages_karte .sidebar
 {
 	position:absolute;

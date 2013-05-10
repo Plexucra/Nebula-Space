@@ -130,6 +130,8 @@
 					<img src="${up}/css/default_thema/images/spezies/planet<%= p.getId() %>.jpg"/><br/>
 					<span class="cn_label">Planet:</span> <span class="cn_value"><%= p.getName() %></span><br/>
 					<span class="cn_label">Spezies:</span> <span class="cn_value"><%= p.getSpezies() %></span><br/>
+					<span class="cn_label">Allianz:</span> <span class="cn_value"><%= p.getAllianz().getBezeichnung() %></span><br/>
+					<span class="cn_label">Diplomatie:</span> <span class="cn_value"><%= p.getAllianzId()==s.getAllianz().getId()?"befreundet":"<font color='red'>befeindet</font>" %></span><br/>
 					<%
 				}
 			}

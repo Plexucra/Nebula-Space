@@ -49,7 +49,7 @@ public class FlottenService
 	public static  List<Flotte> getSprungFlotten(Connection c) throws SQLException
 	{
 		List<Flotte> results = new ArrayList<Flotte>();
-		PreparedStatement ps = c.prepareStatement("	SELECT   id,  besitzerNutzerId, zielX,  zielY, x, y, sprungAufladung from flotte where sprungAufladung = 0 and zielX is not null");
+		PreparedStatement ps = c.prepareStatement("	SELECT * from flotte where sprungAufladung = 0 and zielX is not null");
 		ResultSet rs = ps.executeQuery();
 		while(rs != null && rs.next()) results.add(new Flotte(rs));
 		if(rs!=null) rs.close();
@@ -96,6 +96,17 @@ public class FlottenService
 		catch(SQLException ex)
 		{
 			ex.printStackTrace();
+		}
+	}
+	public static List<Flotte> getNutzerFrachterFlotten(int x, int y, Nutzer nutzer) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			return getNutzerFrachterFlotten(x, y, nutzer, c);
+		} finally
+		{
+			c.close();
 		}
 	}
 	public static List<Flotte> getFlotten(int x, int y) throws Exception
@@ -209,6 +220,22 @@ public class FlottenService
 		ps.close();
 	}
 
+	
+	public static List<Flotte> getNutzerFrachterFlotten(int x, int y, Nutzer nutzer, Connection c) throws SQLException
+	{
+		List<Flotte> results = new ArrayList<Flotte>();
+		PreparedStatement ps = c.prepareStatement("select * from flotte as fl join ( SELECT distinct(tf.id) as flotteId from flotte as tf join geschwader on (geschwader.flotteId = tf.id) join schiffsmodell on (schiffsmodell.id = geschwader.schiffsmodellId) where frachter = 1 and tf.x=? and tf.y=? and tf.besitzerNutzerId = ?) as t on (t.flotteId=fl.id)");
+		ps.setInt(1, x);
+		ps.setInt(2, y);
+		ps.setInt(3, nutzer.getId());
+		ResultSet rs = ps.executeQuery();
+		while (rs != null && rs.next())
+			results.add(new Flotte(rs));
+		if (rs != null)
+			rs.close();
+		ps.close();
+		return results;
+	}
 	public static List<Flotte> getFlotten(int x, int y, Connection c) throws SQLException
 	{
 		List<Flotte> results = new ArrayList<Flotte>();

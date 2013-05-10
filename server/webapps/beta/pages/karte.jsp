@@ -29,7 +29,13 @@
 <script src="../js/pages/karte.js"></script>
 <div id="mapBox">
 	<canvas id="map" width="1200" height="600"></canvas>
-	<div class="sidebar">
+	<div class="sidebar"></div>
+	<div class="dn_kartenoptionen">
+		Zeige:
+		<input type="checkbox" name="showTyp" checked="checked" id="${ns}_showTyp"/><label for="${ns}_showTyp">Gebäudekategorie</label>
+<%-- 		<input type="checkbox" name="showEffizienz" checked="checked" id="${ns}_showEffizienz"/><label for="${ns}_showEffizienz">Effizienz</label> --%>
+		<input type="checkbox" name="showKapazitaet" id="${ns}_showKapazitaet"/><label for="${ns}_showKapazitaet">Kapazität</label>
+		<input type="checkbox" name="showId" checked="checked" id="${ns}_showId"/><label for="${ns}_showId">Bauplan-Nr.</label>
 	</div>
 </div>
 

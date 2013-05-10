@@ -14,9 +14,15 @@ function getPosition(e)
     return {"x": x, "y": y};
 };
 
+var kartenoptionen = {showKapazitaet:false, showId:true, showTyp:true, showEffizienz:false}
+
 $(function()
 {
-	draw();
+//	draw();
+	$("#"+ns+"_showTyp").click(function() { kartenoptionen.showTyp = $(this).prop("checked"); draw(); });
+	$("#"+ns+"_showEffizienz").click(function() { kartenoptionen.showEffizienz = $(this).prop("checked"); draw(); });
+	$("#"+ns+"_showKapazitaet").click(function() { kartenoptionen.showKapazitaet = $(this).prop("checked"); draw(); });
+	$("#"+ns+"_showId").click(function() { kartenoptionen.showId = $(this).prop("checked"); draw(); });
 	$.get('../ajax/grundstueckDetail.jsp?x='+selGrundstueckX+'&y='+selGrundstueckY+'&selModellId='+selModellId, function(data2) 
 	{
 		$("."+ns+" .sidebar").html(data2);
@@ -224,6 +230,16 @@ var grundstuecke;
 var zoom = 33;
 var vBorder = 4;
 
+
+var imageObj = new Image();
+imageObj.src = '../css/default_thema/images/gebaeudeschema.png';
+imageObj.onload = function() 
+{
+	draw();
+};
+
+
+
 function draw()
 {
 	vX = selGrundstueckX-14;
@@ -233,7 +249,9 @@ function draw()
 	{
 		$.getJSON('../json/getGrundstuecke.jsp?x='+selGrundstueckX+'&y='+selGrundstueckY, function(data) 
 		{
+			var halfZoom=Math.round(zoom/2);
 			var ctx = canvas.getContext("2d");
+			ctx.font="10px Arial";
 			ctx.clearRect(0, 0, 1200, 1200);
 			ctx.fillStyle = "rgba(0, 0, 200, 1)";
 			ctx.beginPath();
@@ -251,34 +269,71 @@ function draw()
 //			ctx.closePath();
 //			ctx.stroke();
 			grundstuecke = data;
-			if(typeof selGrundstueckY !== 'undefined' )
-			{
-//				Gewähltes Grundstück markieren
-				ctx.lineWidth=2;
-				ctx.strokeStyle = "rgba(200, 200, 250, 0.9)";
-				ctx.beginPath();
-				ctx.arc( ( (selGrundstueckX-vX)*zoom+Math.round(zoom/2) )-2, ( (selGrundstueckY-vY)*zoom+Math.round(zoom/2) )-2, 9, 0, Math.PI * 2, true);
-				ctx.closePath();
-				ctx.stroke();
-			}
+
 			for(var i in data)
 			{
+				var tx = (data[i].x-vX)*zoom;
+				var ty = (data[i].y-vY)*zoom;
+				ctx.drawImage(imageObj, tx-2, ty-2);
+
 				if(data[i].besitzerNutzerId==userId)
 				{
 //					Eigene Gebaeude markieren
 					ctx.lineWidth=2;
-					ctx.fillStyle = "rgba(250, 250, 250, 0.5)";
+					ctx.fillStyle = "rgba(250, 250, 250, 0.9)";
 					ctx.beginPath();
-					ctx.arc( ( (data[i].x-vX)*zoom+Math.round(zoom/2) )-2, ( (data[i].y-vY)*zoom+Math.round(zoom/2) )-2, 5, 0, Math.PI * 2, true);
+					ctx.arc( tx+halfZoom+1, ty+halfZoom-12, 3, 0, Math.PI * 2, true);
 					ctx.closePath();
 					ctx.fill();
 				}
-				ctx.fillStyle = "rgba(0, 150, 250, 0.3)";
-				if(data[i].typId==1 || data[i].typId==5 || data[i].typId==6 ) ctx.fillStyle = "rgba(250, 90, 90, 0.3)";
-				if(data[i].typId==2) ctx.fillStyle = "rgba(90, 250, 90, 0.3)";
-				if(data[i].typId==3) ctx.fillStyle = "rgba(90, 90, 250, 0.3)";
-				ctx.fillRect ( (data[i].x-vX)*zoom, (data[i].y-vY)*zoom, zoom-vBorder, zoom-vBorder);
+				ctx.fillStyle = "rgba(0, 150, 250, 0.2)";
+				if(data[i].typId==1 || data[i].typId==5 || data[i].typId==6 ) ctx.fillStyle = "rgba(250, 90, 90, 0.2)";
+				if(data[i].typId==2) ctx.fillStyle = "rgba(90, 250, 90, 0.2)";
+				if(data[i].typId==3) ctx.fillStyle = "rgba(90, 90, 250, 0.2)";
+				if(kartenoptionen.showTyp)
+					ctx.fillRect ( tx-3, ty-3, zoom, zoom);
+				ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+				if(kartenoptionen.showId)
+					ctx.fillText(data[i].modellId, 						tx+halfZoom-17, ty+8);
+				if(kartenoptionen.showKapazitaet)
+					ctx.fillText(data[i].a <= 0 ? "Bau...":data[i].k,	tx+halfZoom-17, ty+22);
+				if(kartenoptionen.showEffizienz)
+					ctx.fillText(data[i].a <= 0 ? "Bau...":(Math.round(data[i].e)),	tx+halfZoom-17, ty+22);
+				
+				
 
+			}
+			if(typeof selGrundstueckY !== 'undefined' )
+			{
+				var tx = (selGrundstueckX-vX)*zoom-4;
+				var ty = (selGrundstueckY-vY)*zoom-4;
+				var tBreite = zoom;
+				var tw = Math.round(tBreite / 4)
+//				Gewähltes Grundstück markieren
+				ctx.lineWidth=2;
+				ctx.strokeStyle = "rgba(250, 250, 250, 1)";
+				ctx.beginPath();
+//				
+//			
+				ctx.moveTo(tx, ty+tw);
+				ctx.lineTo(tx, ty);
+				ctx.lineTo(tx+tw, ty);
+				ctx.moveTo(tx+tBreite-tw, ty);
+				ctx.lineTo(tx+tBreite, ty);
+				ctx.lineTo(tx+tBreite, ty+tw);
+				ctx.moveTo(tx+tBreite, ty+tBreite-tw);
+				ctx.lineTo(tx+tBreite, ty+tBreite);
+				ctx.lineTo(tx+tBreite-tw, ty+tBreite);
+				ctx.moveTo(tx+tw, ty+tBreite);
+				ctx.lineTo(tx, ty+tBreite);
+				ctx.lineTo(tx, ty+tBreite-tw);
+				ctx.moveTo(tx, ty+tw);
+				
+
+				
+//				ctx.arc( ( (selGrundstueckX-vX)*zoom+Math.round(zoom/2) )-2, ( (selGrundstueckY-vY)*zoom+Math.round(zoom/2) )-2, 9, 0, Math.PI * 2, true);
+				ctx.closePath();
+				ctx.stroke();
 			}
 		});
 	}

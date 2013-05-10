@@ -19,10 +19,20 @@ List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 	<c:if test="${ row.allianz.id eq s.allianz.id }">
 		<tr>
 			<td>
-<!-- 				<span class="cn_label">Handelsplatz:</span> -->
+				<br/>
+				<br/>
+				<span class="cn_label">Handelsplatz:</span>
 			</td>
 			<td colspan="5">
-				<h1>Handelsplatz: ${ row.name }</h1>
+				<h1>${ row.name } ${ row.id eq s.nutzer.heimatPlanetId?' (Heimatplanet)':'' }</h1>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span class="cn_label">Rohstofftransfer:</span>
+			</td>
+			<td colspan="5">
+				<a href="${up}/pages/modules/handel/frachttransfer.jsp?planetId=${row.id}">Frachter im Orbit von ${ row.name } be- oder entladen</a>
 			</td>
 		</tr>
 		<tr>
@@ -41,11 +51,11 @@ List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 		%>
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
 			<td><span class="cn_label">Rohstoffförderung <br/>durch Staatskonzerne:</span></td>
-			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess1Vorkommen() ) %>/h</td>
-			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess2Vorkommen() ) %>/h</td>
-			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess3Vorkommen() ) %>/h</td>
-			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess4Vorkommen() ) %>/h</td>
-			<td><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess5Vorkommen() ) %>/h</td>
+			<td><fmt:formatNumber><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess1Vorkommen() ) %></fmt:formatNumber>/h</td>
+			<td><fmt:formatNumber><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess2Vorkommen() ) %></fmt:formatNumber>/h</td>
+			<td><fmt:formatNumber><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess3Vorkommen() ) %></fmt:formatNumber>/h</td>
+			<td><fmt:formatNumber><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess4Vorkommen() ) %></fmt:formatNumber>/h</td>
+			<td><fmt:formatNumber><%=  Math.round( (3600f / ((float)s.getTicker().getDuration()/1000f))*p.getRess5Vorkommen() ) %></fmt:formatNumber>/h</td>
 		</tr>
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
 			<td><span class="cn_label">Letzter Kurs (Vol.):</span></td>
@@ -57,11 +67,7 @@ List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 		</tr>
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
 			<td><span class="cn_label">Ihr Lagerstand:</span></td>
-			<td><%= l.getRess1() %></td>
-			<td><%= l.getRess2() %></td>
-			<td><%= l.getRess3() %></td>
-			<td><%= l.getRess4() %></td>
-			<td><%= l.getRess5() %></td>
+			<% for(int ress=1; ress<=5; ress++) {%> <td><fmt:formatNumber><%=l.getRess(ress) %></fmt:formatNumber></td> <%} %>
 		</tr>
 		
 		<tr class="${ row.allianz.id ne s.allianz.id ? 'cn_disabled':'' }">
@@ -102,6 +108,10 @@ List<Order> orders = HandelService.getNutzerOrders(s.getNutzer());
 			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=3">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=3">Verkauforder erstellen</a> </c:if></td>
 			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=4">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=4">Verkauforder erstellen</a> </c:if></td>
 			<td><c:if test="${ row.allianz.id eq s.allianz.id }"><a href="${up}/pages/modules/handel/order.jsp?kauf=1&planetId=${row.id}&ress=5">Kauforder erstellen</a>  <br/><a href="${up}/pages/modules/handel/order.jsp?kauf=0&planetId=${row.id}&ress=5">Verkauforder erstellen</a> </c:if></td>
+		</tr>
+		<tr>
+			<td/>
+			<td colspan="5"><hr/></td>
 		</tr>
 	</c:if>
 </c:forEach>

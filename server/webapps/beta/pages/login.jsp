@@ -9,7 +9,7 @@ Nutzer nutzer = NutzerService.getNutzerByKey(request.getParameter("key"));
 if(nutzer!=null)
 	session.setAttribute("userId", nutzer.getId());
 
-if(session.getAttribute("userId")!=null) response.sendRedirect("karte.jsp");
+if(session.getAttribute("userId")!=null) response.sendRedirect("nachrichten.jsp");
 else
 {
 %>

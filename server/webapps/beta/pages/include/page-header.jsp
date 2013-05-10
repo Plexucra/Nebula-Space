@@ -89,7 +89,7 @@
 							<a id="menuPunkt1_pages_einstellungen" href='${up}/pages/einstellungen.jsp'>Einstellungen</a>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_karte">
-							<a id="menuPunkt2_pages_karte" href='${up}/pages/karte.jsp' >Karte</a><span> | </span>
+							<a id="menuPunkt2_pages_karte" href='${up}/pages/karte.jsp' >Schematischer Stadtplan</a><span> | </span>
 							<a id="menuPunkt2_pages_immobilien" href='${up}/pages/immobilien.jsp'>Meine Immobilien</a><span> | </span>
 							<a id="menuPunkt2_pages_modell-auswahl" href='${up}/pages/modell-auswahl.jsp'>Bauplan auswählen</a><span> | </span>
 						</div>
@@ -124,6 +124,7 @@
 							<a id="menuPunkt2_pages_modules_handel_uebersicht" href='${up}/pages/modules/handel/uebersicht.jsp'>Handelsplätze</a><span> | </span>
 							<a id="menuPunkt2_pages_modules_handel_order" href='${up}/pages/modules/handel/order.jsp'>Order erstellen</a><span> | </span>
 							<a id="menuPunkt2_pages_modules_handel_transaktionen" href='${up}/pages/modules/handel/transaktionen.jsp'>letzte Transaktionen</a><span> | </span>
+							<a id="menuPunkt2_pages_modules_handel_frachttransfer" href='${up}/pages/modules/handel/frachttransfer.jsp'>Frachttransfer</a><span> | </span>
 						</div>
 
 

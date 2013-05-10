@@ -29,7 +29,7 @@ public class Sql
 			map.put("SchlachtService.getKaempfe", "select * from kampf where schlachtId = ?");
 			map.put("FlottenService.getEmptyFlotten","select * from flotte where flotte.id in (select f.id from flotte as f left outer join geschwader on (geschwader.flotteId = f.id) where geschwader.flotteId is null)");
 			map.put("FlottenService.deleteFlotte","delete from flotte where id = ?");
-			map.put("NachrichtService.getUngeleseneSystemNachrichten","select * from nachricht where nutzerIdSender = 0 and gelesen = 0 and nutzerIdEmpfaenger = ?");
+			map.put("NachrichtService.getUngeleseneSystemNachrichten","select * from nachricht where nutzerIdSender = 0 and gelesen = 0 and nutzerIdEmpfaenger = ? order by datumGesendet desc");
 			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text, datumGesendet) values (?,?,?,?,?,NOW())");
 			map.put("AllianzService.getAllianzen","select * from allianz");
 			map.put("NutzerService.insertLager","insert into lager (nutzerId, planetId, ress1, ress2, ress3, ress4, ress5) values (?,?,0,0,0,0,0)");

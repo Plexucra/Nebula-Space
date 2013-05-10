@@ -23,7 +23,7 @@ try
 	if(request.getParameter("y")!=null) y = Integer.parseInt(request.getParameter("y"));
 
 	Map<String,String> map = new HashMap<String,String>();
-	PreparedStatement ps = c.prepareStatement("	SELECT gebaeude.besitzerNutzerId as besitzerNutzerId, gebaeude.id as gebaeudeId, grundstueck.x as x, grundstueck.y as y, modell.typId as typId  FROM  gebaeude		join modell on (modell.id = gebaeude.modellId)			join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) where (x < ?) and ( x > ? ) and (y < ?) and ( y > ? ) and planetId = ?   ");
+	PreparedStatement ps = c.prepareStatement("	SELECT gebaeude.besitzerNutzerId as besitzerNutzerId, gebaeude.id as gebaeudeId, gebaeude.`alter` as `alter`, grundstueck.x as x, gebaeude.effizienz as effizienz, grundstueck.y as y, modell.kapazitaet as kapazitaet , modell.typId as typId, modell.id as modellId  FROM  gebaeude		join modell on (modell.id = gebaeude.modellId)			join grundstueck on (grundstueck.gebaeudeId = gebaeude.id) where (x < ?) and ( x > ? ) and (y < ?) and ( y > ? ) and planetId = ?   ");
 	ps.setInt(1, x+30);
 	ps.setInt(2, x-20);
 	ps.setInt(3, y+15);
@@ -83,6 +83,47 @@ try
 			{
 				if(b2) sb.append(",");
 				sb.append("\"typId\":\"");
+				sb.append(value);
+				sb.append("\"");
+				b2=true;
+			}
+			
+			value = rs.getString("modellId");
+			if(value!=null)
+			{
+				if(b2) sb.append(",");
+				sb.append("\"modellId\":\"");
+				sb.append(value);
+				sb.append("\"");
+				b2=true;
+			}
+			
+			value = rs.getString("kapazitaet");
+			if(value!=null)
+			{
+				if(b2) sb.append(",");
+				sb.append("\"k\":\"");
+				sb.append(value);
+				sb.append("\"");
+				b2=true;
+			}
+			
+// 			value = rs.getFloat("effizienz");
+// 			if(value!=null)
+			{
+				if(b2) sb.append(",");
+				sb.append("\"e\":\"");
+				sb.append( ""+(100f * rs.getFloat("effizienz")));
+				sb.append("\"");
+				b2=true;
+			}
+			
+			
+			value = rs.getString("alter");
+			if(value!=null)
+			{
+				if(b2) sb.append(",");
+				sb.append("\"a\":\"");
 				sb.append(value);
 				sb.append("\"");
 				b2=true;

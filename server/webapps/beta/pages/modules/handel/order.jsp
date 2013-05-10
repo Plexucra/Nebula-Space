@@ -49,7 +49,7 @@
 			});
 			$("#${ns}_form select, #${ns}_form input[type='radio']").change(function(e)
 			{
-				$("#${ns}_form select").hide();
+				$("#${ns}_form").hide();
 				location.replace("${up}/pages/modules/handel/order.jsp?"+$("#${ns}_form").serialize())
 			});
 			$("#${ns}_form input[name='volumen'], #${ns}_form input[name='kurs']").keyup(function(e)
