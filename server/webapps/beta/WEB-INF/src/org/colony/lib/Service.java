@@ -23,7 +23,7 @@ import org.colony.service.SchlachtService;
 public class Service
 {
 
-	public boolean debug = true;
+	public boolean debug = false;
 	public Cache cache;
 
 	synchronized public void updateTick() throws Exception
@@ -87,6 +87,7 @@ public class Service
 				List<Gebaeude> relGebs = GebaeudeService.getRelevanteGebaeude(p);
 //				List<Gebaeude> planetGebs = getGebaeude(p);
 				List<Gebaeude> changedPlanetGebs = new ArrayList<Gebaeude>(100);
+				if(debug) {System.out.println("updateTick getRelevanteGebs milis: "+(System.currentTimeMillis()-lt)+" ("+relGebs.size()+")"); lt=System.currentTimeMillis(); }
 				for(Gebaeude g : relGebs)
 				{
 					int t_ausgaben		= g.getAusgaben();
@@ -140,8 +141,10 @@ public class Service
 						changedPlanetGebs.add(g);
 
 				}
+				if(debug) {System.out.println("updateTick geb-berechnung für plani X milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 				GebaeudeService.updateGebaeude(c, changedPlanetGebs);
 				c.commit();
+				if(debug) {System.out.println("updateTick updateGebaeude("+changedPlanetGebs.size()+") für plani X milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			}
 			if(debug) {System.out.println("updateTick gebäudeberechnung milis: "+(System.currentTimeMillis()-lt)); lt=System.currentTimeMillis(); }
 			//------------------------- Globale updates --------------------------

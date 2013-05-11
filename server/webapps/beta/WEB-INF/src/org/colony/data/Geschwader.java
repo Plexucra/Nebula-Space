@@ -15,7 +15,17 @@ public class Geschwader implements Serializable
 	int schiffsmodellId;
 	//nur mittel zum zweck und nicht immer befüllt..
 	int nutzerId;
+	
+	public boolean isFrachter()
+	{
+		return getSchiffsmodell().isFrachter();
+	}
 
+	public int getFassungsvermoegen()
+	{
+		if(!getSchiffsmodell().isFrachter()) return 0;
+		return anzahl*10000;
+	}
 
 	public Geschwader()
 	{

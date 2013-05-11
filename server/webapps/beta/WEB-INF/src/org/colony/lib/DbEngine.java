@@ -36,7 +36,7 @@ public class DbEngine
 		if(p!=null)
 			for(int i =0; i< p.length; i++)
 				ps.setInt(i+1, p[i]);
-//		System.out.println("exec: "+ps.toString());
+		System.out.println("exec: "+ps.toString());
 		int result = ps.executeUpdate();
 		ps.close();
 		return result;

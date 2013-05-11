@@ -25,7 +25,7 @@ body, td, th
 	font-size:12px;
 	text-align: left;
 }
-td[align='right'] { text-align: right; }
+td[align='right'], th[align='right'] { text-align: right; }
 small
 {
 	color:#555;

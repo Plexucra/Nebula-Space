@@ -137,6 +137,25 @@ public class Query
 			e.printStackTrace();
 		}
 	}
+	public void closeQuery()
+	{
+		try
+		{
+			if (rs != null)
+				rs.close();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			if (ps != null)
+				ps.close();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	public String getSql()
 	{

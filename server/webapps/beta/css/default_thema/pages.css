@@ -44,6 +44,20 @@
 }
 /*-------------------------------------------------*/
 
+._pages_modules_handel_frachttransfer .dn_transfer td
+{
+	vertical-align: middle;
+}
+._pages_modules_handel_frachttransfer td.ress-slider
+{
+	padding-left:20px;
+}
+._pages_modules_handel_frachttransfer select
+{
+	width: 250px;
+}
+
+/*-------------------------------------------------*/
 
 ._ajax_posDetail img
 {

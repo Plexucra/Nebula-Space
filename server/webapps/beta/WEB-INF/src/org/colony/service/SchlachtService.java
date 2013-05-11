@@ -33,7 +33,8 @@ public class SchlachtService
 			double multi = ((double) (vg.getMasse())) / verteidigerMasse;
 			double angriffswert = 0;
 			for (Geschwader ag : angreifer)
-				angriffswert += ag.getMasse() * ag.getSchiffsmodell().getAngriffsbonus(vg.getSchiffsmodell());
+				if(!ag.isFrachter())
+					angriffswert += ag.getMasse() * ag.getSchiffsmodell().getAngriffsbonus(vg.getSchiffsmodell());
 			angriffswert *= 0.5f + (kampftick / 20d);
 			angriffswert *= multi;
 
@@ -110,13 +111,14 @@ public class SchlachtService
 			{
 				DbEngine.exec(c, "SchlachtService.closeSchlacht", ContextListener.getTicker().getTick(), schlacht.getId());
 			}
-		} catch (SQLException ex)
+		}
+		catch (SQLException ex)
 		{
 			ex.printStackTrace();
 		}
 	}
 
-	public static void insertKampftick(Connection c, Schlacht schlacht, List<Geschwader> armeeAufgebot1, List<Geschwader> armeeAufgebot2)
+	synchronized public static void insertKampftick(Connection c, Schlacht schlacht, List<Geschwader> armeeAufgebot1, List<Geschwader> armeeAufgebot2)
 	{
 		try
 		{
@@ -138,6 +140,8 @@ public class SchlachtService
 
 				statement.addBatch("insert into kampf (schlachtId, anzahlAufgebot, anzahlUeberlebend, schiffsmodellId, nutzerId, tick) " + "values (" + "'" + schlacht.getId() + "'," + "'" + g.getAnzahl() + "'," + "'" + ueberlebend + "'," + "'" + g.getSchiffsmodellId() + "'," + "'" + g.getNutzerId() + "',"+S.getTick()+")");
 				statement.addBatch("update geschwader set anzahl = " + ueberlebend + " where id = " + g.getId());
+				if(g.isFrachter() && ueberlebend>0)
+					FlottenService.updateFlottenlagerKapazitaet(g.getFlotteId(), g.getFassungsvermoegen(), c);
 			}
 			for (Geschwader g : armeeAufgebot2)
 			{
@@ -147,6 +151,8 @@ public class SchlachtService
 
 				statement.addBatch("insert into kampf (schlachtId, anzahlAufgebot, anzahlUeberlebend, schiffsmodellId, nutzerId, tick) " + "values (" + "'" + schlacht.getId() + "'," + "'" + g.getAnzahl() + "'," + "'" + ueberlebend + "'," + "'" + g.getSchiffsmodellId() + "'," + "'" + g.getNutzerId() + "',"+S.getTick()+")");
 				statement.addBatch("update geschwader set anzahl = " + ueberlebend + " where id = " + g.getId());
+				if(g.isFrachter() && ueberlebend>0)
+					FlottenService.updateFlottenlagerKapazitaet(g.getFlotteId(), g.getFassungsvermoegen(), c);
 			}
 			statement.executeBatch();
 			statement.close();

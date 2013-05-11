@@ -11,11 +11,64 @@ import org.colony.data.Flotte;
 import org.colony.data.Geschwader;
 import org.colony.data.Nutzer;
 import org.colony.data.Schiffsmodell;
+import org.colony.lib.Cache;
 import org.colony.lib.DbEngine;
 import org.colony.lib.Query;
 
 public class FlottenService
 {
+	public static void transferFlottenlager(Nutzer nutzer, int planetId, int flotteId, int ress1LagerBelegung, int ress2LagerBelegung, int ress3LagerBelegung, int ress4LagerBelegung, int ress5LagerBelegung) throws Exception
+	{
+		Connection c = DbEngine.getConnection();
+		try
+		{
+			transferFlottenlager(nutzer, planetId, flotteId, ress1LagerBelegung, ress2LagerBelegung, ress3LagerBelegung, ress4LagerBelegung, ress5LagerBelegung, c);
+			c.commit();
+		}
+		catch(Exception ex)
+		{
+			c.rollback();
+			throw ex;
+		}
+		finally { c.close(); }
+	}
+	
+	public static void updateFlottenlagerKapazitaet(int flotteId, int neueKapazitaet, Connection c)
+	{
+		
+	}
+	
+	public static void transferFlottenlager(Nutzer nutzer, int planetId, int flotteId, int ress1, int ress2, int ress3, int ress4, int ress5, Connection c) throws Exception
+	{
+		int[] neueFrachterLager = new int[] {ress1,ress2,ress3,ress4,ress5};
+		if(Cache.get().getPlanet(planetId).getAllianzId() != nutzer.getAllianzId())
+			throw new Exception("Sie können mit diesen Planeten kein Handel betreiben.");
+		
+		Flotte flotte = getFlotte(flotteId, c);
+		Geschwader geschwader = null;
+		for(Geschwader g : getGeschwader(flotte, c))
+			if(g.getSchiffsmodell().isFrachter())
+				geschwader = g;
+		if(geschwader == null)
+			throw new Exception("Es konnten keine Frachter in der gewählten Flotte gefunden werden");
+		if(geschwader.getFassungsvermoegen() < (ress1+ress2+ress3+ress4+ress5))
+			throw new Exception("Die zu ladende Rohstoffmenge übersteigt die Lagerkapazität der Frachter.");
+		for(int i : neueFrachterLager)
+			if(i<0)
+				throw new Exception("Die Rohstofflager können keinen negativen Wert aufnehmen.");
+		
+		int t_ress1 = ress1-flotte.getRess1();
+		int t_ress2 = ress2-flotte.getRess2();
+		int t_ress3 = ress3-flotte.getRess3();
+		int t_ress4 = ress4-flotte.getRess4();
+		int t_ress5 = ress5-flotte.getRess5();
+		if( DbEngine.exec(c, "update lager set ress1=ress1-?, ress2=ress2-?, ress3=ress3-?, ress4=ress4-?, ress5=ress5-? where ress1-? >= 0 and ress2-? >= 0 and ress3-? >= 0 and ress4-? >= 0 and ress5-? >= 0 and nutzerId = ? and planetId = ?",
+				t_ress1,t_ress2,t_ress3,t_ress4,t_ress5,t_ress1,t_ress2,t_ress3,t_ress4,t_ress5, nutzer.getId(), planetId) == 0)
+			throw new Exception("Die Rohstoffbestände in den Lagern des Planeten sind zu gering für diesen Transfer.");
+		
+		if( DbEngine.exec(c, "update flotte set ress1=?, ress2=?, ress3=?, ress4=?, ress5=? where id = ?", ress1, ress2, ress3, ress4, ress5, flotteId) == 0 )
+			throw new Exception("Die Flotte "+flotteId+" könnte be-/entladen werden");
+	}
 	/**
 	 * Liefert alle Geschwader einer Flotten bzw. alle nach Schiffmodellen gruppierten Unterflotten einer Flotte.
 	 */
@@ -188,10 +241,21 @@ public class FlottenService
 		if (rs != null)
 			rs.close();
 		ps.close();
-//		System.out.println("t1:" + ps.toString());
-//		System.out.println("t2:" + results);
-//		System.out.println("t3:" + results.size());
 		return results;
+	}
+
+	public static Flotte getFlotte(int flotteId, Connection c) throws Exception
+	{
+		Flotte result = null;
+		Query q = new Query("select * from flotte where id = ?",c);
+		q.addParameter(flotteId);
+		if(q.nextResult())
+			result = new Flotte(q.getResult());
+		q.closeQuery();
+		
+		if(result == null)
+			throw new Exception("Die angeforderte Flotte "+flotteId+" konnte nicht gefunden werden");
+		return result;
 	}
 
 	public static void updateFlotten(List<Integer> ids, Nutzer nutzer, int zielX, int zielY) throws Exception

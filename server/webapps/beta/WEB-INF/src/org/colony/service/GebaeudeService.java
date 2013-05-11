@@ -20,11 +20,11 @@ public class GebaeudeService
 	{
 		for(Gebaeude g : gebs)
 		{
-			PreparedStatement ps = c.prepareStatement("update gebaeude set auslastung = ?, ausgaben = ?, einnahmen = ?, `alter` = ? where id = ?");
+			PreparedStatement ps = c.prepareStatement("update gebaeude set auslastung = ?, ausgaben = ?, einnahmen = ?, `effizienz` = ? where id = ?");
 			ps.setInt(1, g.getAuslastung());
 			ps.setInt(2, g.getAusgaben());
 			ps.setInt(3, g.getEinnahmen());
-			ps.setInt(4, g.getAlter());
+			ps.setFloat(4, g.getEffizienz());
 			ps.setInt(5, g.getId());
 			ps.executeUpdate();
 			ps.close();
