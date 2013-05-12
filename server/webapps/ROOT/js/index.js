@@ -15,12 +15,10 @@
 
 		function showLoginMsg()
 		{
-			$("#loginDiv").html("Bitte melden Sie sich über Ihr Google-Konto an. "+
-					"Eine klassische Registrierungsmethode mit E-Mail und Kennwort wird aus Sicherheitsgründen "+
-					"derzeit noch nicht unterstützt <br/><small>(Aus Kostengründen ist kein eigenes HTTPS Zertifikat vorhanden)</small>"+
-					"<br/><br/><button class='gbqfb'>Über Ihr Google-Konto einloggen</button><br/><br/>"+
-					"<i>Hinweise: <ul><li>Aus Gründen des Datenschutzes werden von uns generell keine E-Mail-Adressen gespeichert. Der Google-Login dient lediglich der eindeutigen Identifizierung des Spieler-Accounts."+
-					"</li><li>Wenn Sie kein Google-Konto besitzen können Sie dieses Spiel vorerst leider nicht spielen. (Alternativ-Login ist bereits in Arbeit)</li></ul></i>");
+			$("#loginDiv").html("<h2>Über Google-Konto einloggen:</h2> "+
+					"<div class='loginOption'>Hier können Sie dieses Spiel bequem über einen Klick an Ihre Google-Nummer knüpfen.<br/>"+
+					"Persönliche Daten, wie Ihr Name oder Ihre E-Mail Adresse werden von uns generell nicht gespeichert.<br/><br/><button class='gbqfb'>Über Ihr Google-Konto einloggen</button></div>"+
+					"");
 			$("#loginDiv button").click(function(tne)
 			{
 				gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
@@ -53,3 +51,34 @@
 			else
 				showLoginMsg();
 		}
+
+var isNewKey = false;
+$(function()
+{
+	$("#generateKey").click(function(e)
+	{
+		e.preventDefault();
+		var myKey = "K";
+		myKey += (new Date()).getTime();
+		for(var i=0; i<=6; i++)
+			myKey += parseInt((Math.random()*10)-1)
+//		Math.random()
+		$("#myKey").val(myKey);
+		alert("Ihr neuer Schlüssel wurde in das Schlüsselfeld übertragen.\nBitte notieren/kopieren Sie sich diesen Schlüssel auf Ihren Computer für spätere Logins.")
+		isNewKey = true;
+	});
+
+	$("#keyLogin").click(function(e)
+	{
+		e.preventDefault();
+		var myKey = $("#myKey").val();
+		if(!myKey || myKey.length < 20)
+			alert("Bitte geben Sie Ihren Schlüssel ein.\n\nSollten Sie noch keinen Schlüssel besitzen, (und nur dann) erzeugen Sie\nbitte einen neuen über 'Schlüssel erzeugen' und notieren / kopieren Sie sich diesen an einen sicheren Ort.");
+		else
+		{
+			if(isNewKey)
+				alert("Bitte notieren/kopieren Sie sich ihren Schlüssel:\n\n"+myKey+"\n\n..Verwenden Sie bei künftigen Logins nur noch diesen Schlüssel und erzeugen Sie später keinen weiteren.\n(Das Verwenden mehrerer Schlüssel kann zur Löschung Ihres Accounts führen)");
+			location.replace("/beta/pages/login.jsp?key="+myKey);
+		}
+	});
+})
