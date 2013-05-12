@@ -21,6 +21,7 @@ public class Einfluss implements Cloneable
 	Produkt aProdukt;
 	Produkt bProdukt;
 	int radius;
+	String beschreibung;
 	public Einfluss clone()
 	{
 		Einfluss e = new Einfluss();
@@ -43,6 +44,7 @@ public class Einfluss implements Cloneable
 		e.setaObjektart(aObjektart);
 		e.setbObjektart(bObjektart);
 		e.setRadius(radius);
+		e.setBeschreibung(beschreibung);
 		return e;
 	}
 	
@@ -215,6 +217,16 @@ public class Einfluss implements Cloneable
 	public void setRadius(int radius)
 	{
 		this.radius = radius;
+	}
+
+	public String getBeschreibung()
+	{
+		return beschreibung;
+	}
+
+	public void setBeschreibung(String beschreibung)
+	{
+		this.beschreibung = beschreibung;
 	}
 
 }

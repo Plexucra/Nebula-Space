@@ -8,7 +8,16 @@
 <%@page import="org.colony.lib.ContextListener"%>
 
 
-
+	<script>
+		$(function()
+		{
+			$(".dn_modellAuswahlTyp > table").hide();
+			$(".dn_modellAuswahlTyp > h3").css("cursor","pointer").click( function()
+			{
+				$(this).parent().children("table").toggle();
+			});
+		});
+	</script>
 
 	<style>
 	.dn_modellAuswahlTyp td
@@ -16,6 +25,11 @@
 		width: 120px;
 	}
 	</style>
+	
+	<i>
+		Bitte klicken Sie auf eine der Überschriften um den jew. Bereich aufzuklappen:
+	</i><br/><br/>
+	
 	<%
 	if("true".equals(request.getParameter("umbau")))
 	{ %>
@@ -25,25 +39,32 @@
 	else
 	{
 	%>
-	Bauplatzkosten: <%= NutzerService.getNutzer(session).getBauplatzKosten() %><br/>
+<%-- 	Bauplatzkosten: <%= NutzerService.getNutzer(session).getBauplatzKosten() %><br/> --%>
 	<%
 	}%>
 	
 		<%
 		Typ lastTyp = null;
 		Produkt lastProdukt = null;
+		int spaltencounter = 0;
 		for( Modell m : Cache.get().getModellListe() )
 		{
+			spaltencounter++;
 			pageContext.setAttribute("t_m", m);
 			if(m.getTyp()!=lastTyp || m.getProdukt()!=lastProdukt)
 			{
+				spaltencounter = 0;
 				if(lastTyp!=null)
 					out.println("</tr></table></div>");
 				if(m.getProdukt()!=null)
 					out.println("<div class='dn_modellAuswahlTyp'><h3>"+m.getProdukt().getBezeichnung()+" <span class='cn_label'>("+m.getTyp().getBezeichnung()+")</span></h3><table><tr>");
 				else
 					out.println("<div class='dn_modellAuswahlTyp'><h3>"+m.getTyp().getBezeichnung()+"</h3><table><tr>");
-					
+			}
+			if(spaltencounter >= 3)
+			{
+				out.println("</tr><tr>");
+				spaltencounter = 0;
 			}
 			lastTyp = m.getTyp();
 			lastProdukt = m.getProdukt();			

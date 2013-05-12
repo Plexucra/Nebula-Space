@@ -26,7 +26,7 @@
 		<img class='dn_modell dn_modell_${t_modell.id}' src='../resources/modelle/${t_modell.id}/thumbnail.gif' title="Vorschau auf Gebäude dieses Bauplans"/><br/>
 		<span class="cn_label">Typ/Produkt:</span> <br/>
 		${t_modell.typ.bezeichnung} <c:if test="${not empty t_modell.produkt}">	/ ${t_modell.produkt.bezeichnung} </c:if><br/><br/>
-		<a href="javascript:;" class="dn_gebaeudeErrichten" title="Den ausgewählten Bauplan an dieser Stelle zum Bau beauftragen? Hierfür fallen die oben aufgeführten Kosten an.">
+		<a href="javascript:;" class="cn_button dn_gebaeudeErrichten" title="Den ausgewählten Bauplan an dieser Stelle zum Bau beauftragen? Hierfür fallen die oben aufgeführten Kosten an.">
 			<%= g==null?"Bau":"Umbau" %> beauftragen
 		</a><br/><br/>
 		<a href="modell-auswahl.jsp" title="Wenn Sie einen anderes Gebäude bauen möchten als derzeit ausgewählt, können Sie hierfür einen anderen Bauplan auswählen.">

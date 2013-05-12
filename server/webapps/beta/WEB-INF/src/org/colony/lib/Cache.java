@@ -145,6 +145,8 @@ public class Cache
 				//objektart 2 = produkt | objektart 1 = typ
 				Einfluss f = new Einfluss();
 //				f.setBeziehung(rs.getInt("beziehung"));
+				f.setId(rs.getInt("id"));
+				f.setBeschreibung(rs.getString("Beschreibung"));
 				f.setaId(rs.getInt("aId"));
 				f.setbId(rs.getInt("bId"));
 				f.setRadius(rs.getInt("radius"));

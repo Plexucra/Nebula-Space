@@ -1,7 +1,7 @@
 <%@page import="org.colony.lib.Cache"%>
 <%@page import="org.colony.service.GebaeudeService"%>
 <%@page import="java.util.List"%>
-<%@ include file="include/ajax-header.jsp" %>
+<%@ include file="/pages/include/ajax-header.jsp" %>
 <%@ page pageEncoding="UTF-8"%>
 
 <%@page import="java.text.SimpleDateFormat"%>
@@ -31,7 +31,7 @@
 			$("span[title]").append($("<span class='ui-icon ui-icon-extlink'/>").css("display","inline-block"));
 			
 		    $( ".${ns} > div" ).accordion({ active:lactive, heightStyle: "content" });
-		    $( ".${ns} a").button();
+		    $( ".${ns} a.cn_button").button();
 		    $( ".${ns}" ).tooltip();
 			
 			$("."+ns+" .sidebar .dn_folder > div").hide();
@@ -116,7 +116,7 @@
 				<div>
 					Um ein Gebäude zu errichten, muss zunächst ein Bauplan ausgewählt werden.<br/>
 					<br/>
-					<a href="modell-auswahl.jsp">Bauplan auswählen</a>
+					<a class="cn_button" href="modell-auswahl.jsp">Bauplan auswählen</a>
 					<br/><br/>
 				</div>
 				
@@ -129,7 +129,7 @@
 						<span class="cn_label">Kapazität:</span> ${bestM.kapazitaet}<br/>
 						<span class="cn_label">geschätzte Effizienz:</span>
 						<fmt:formatNumber type="percent" value="${bestE}"/><br/><br/>
-						<a href="karte.jsp?selModellId=${bestM.id}">Vorschlag verwenden</a><br/><br/>
+						<a class="cn_button" href="karte.jsp?selModellId=${bestM.id}">Vorschlag verwenden</a><br/><br/>
 					</div>
 				</c:if>
 			<%
@@ -161,6 +161,7 @@
 		<img class='dn_modell dn_modell_${g.modell.id}' src='../resources/modelle/${g.modell.id}/thumbnail.gif'/><br/>
 		${g.modell.bezeichnung}<br/>
 		<div class='cn_zusatz'>${g.modell.typ.bezeichnung}</div><br/>
+		<a class="cn_forward" href="javascript:;" onclick="showAjaxDialog('${up}/ajax/modellInfoDialog.jsp?modellId=${g.modell.id}')">Mehr Infos</a><br/>
 		<c:choose>
 			<c:when test="${ g.alter < 0 }">
 				<b>Gebäude wird gebaut..</b><br/><br/>
@@ -208,8 +209,8 @@
 				<c:choose>
 					<c:when test="${ g.besitzer.id == userId }">
 						<br/><i>Dieses Gebäude ist Ihr Eigentum.</i><br/><br/>
-						<a href='modell-auswahl.jsp' class='dn_modellAuswahl'>Gebäude ersetzen</a><br/><br/>
-						<a href='javascript:;' class='dn_abreissen'>Gebäude abreißen</a><br/><br/>
+						<a href='modell-auswahl.jsp' class='cn_button dn_modellAuswahl'>Gebäude ersetzen</a><br/><br/>
+						<a href='javascript:;' class='cn_button dn_abreissen'>Gebäude abreißen</a><br/><br/>
 					</c:when>
 					<c:otherwise>
 						Besitzer:<br/><i>${g.besitzer.alias}</i><br/><br/>

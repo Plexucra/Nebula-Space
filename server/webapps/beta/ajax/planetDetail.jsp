@@ -1,20 +1,26 @@
+<%@page import="org.colony.service.HandelService"%>
+<%@page import="org.colony.lib.Cache"%>
 <%@ include file="include/ajax-header.jsp" %>
 <%@ page pageEncoding="UTF-8"%>
 
+<% pageContext.setAttribute("planet", Cache.get().getPlanet(s.getInt("planetId"))  ); %>
 
+<h1>Ihr Heimatplanet ${planet.name}</h1>
+<img src="../css/default_thema/images/spezies/planet${planet.id}.jpg" class="cn_left"/>
+
+<span class="cn_label">Zugehörigkeit des Planets:</span>
+<br/>${planet.allianz.bezeichnung}<br/><br/>
+<span class="cn_label">Ressourcenvorkommen:</span><br/><br/>
+<table>
+	<tr><td><%= HandelService.getRessName(1)  %>:</td><td>${ planet.ress1Vorkommen } Tonnen / Hektar</td></tr>
+	<tr><td><%= HandelService.getRessName(2)  %>:</td><td>${ planet.ress2Vorkommen } Tonnen / Hektar</td></tr>
+	<tr><td><%= HandelService.getRessName(3)  %>:</td><td>${ planet.ress3Vorkommen } Tonnen / Hektar</td></tr>
+	<tr><td><%= HandelService.getRessName(4)  %>:</td><td>${ planet.ress4Vorkommen } Tonnen / Hektar</td></tr>
+	<tr><td><%= HandelService.getRessName(5)  %>:</td><td>${ planet.ress5Vorkommen } Tonnen / Hektar</td></tr>
+</table>
 
 <c:choose>
 <c:when test="${ param['planetId'] eq '1' }">
-	<h1>Ihr Heimatplanet Drasi Prime</h1>
-	<img src="../css/default_thema/images/spezies/planet1.jpg" class="cn_left"/>
-	Ressourcenvorkommen:<br/><br/>
-	<table>
-		<tr><td>Elerium</td><td>1 Tonnen / Hektar</td></tr>
-		<tr><td>Tetrele</td><td>105 Tonnen / Hektar</td></tr>
-		<tr><td>Seltenerdmetalle</td><td>14 Tonnen / Hektar</td></tr>
-		<tr><td>Edelmetalle</td><td>5 Tonnen / Hektar</td></tr>
-		<tr><td>Alkalimetalle</td><td>40 Tonnen / Hektar</td></tr>
-	</table>
 
 	<h1>Spezies: Drasi</h1>
 	Die Drazi sind eine menschenähnliche Spezies, doch ihre Haut ist bedeckt mit farbigen Hornplatten, welche von Purpur bis Grün gefärbt sind. Auffälligstes Merkmal ist eine große Hornplatte an ihrer Stirn, welche vermutlich früher zu Zweikämpfen benutzt wurde. Des Weiteren befinden sich die Geschlechtsorgane der männlichen Drazi an den Oberarmen.
@@ -25,17 +31,6 @@
 	Die Drazi verfügen über Technologie, die sie hauptsächlich von anderen Völkern erwerben. 
 </c:when>
 <c:when test="${ param['planetId'] eq '2' }">
-	<h1>Ihr Heimatplanet Andoria Prime</h1>
-	<img src="../css/default_thema/images/spezies/planet2.jpg" class="cn_left"/>
-	Ressourcenvorkommen:<br/><br/>
-	<table>
-		<tr><td>Elerium</td><td>1 Tonnen / Hektar</td></tr>
-		<tr><td>Tetrele</td><td>105 Tonnen / Hektar</td></tr>
-		<tr><td>Seltenerdmetalle</td><td>14 Tonnen / Hektar</td></tr>
-		<tr><td>Edelmetalle</td><td>5 Tonnen / Hektar</td></tr>
-		<tr><td>Alkalimetalle</td><td>40 Tonnen / Hektar</td></tr>
-	</table>
-
 	<h1>Spezies: Andorianer</h1>
 	Andorianer sind eine humanoide Spezies, die auf Andoria beheimatet ist.
 	Andorianer haben eine hell- bis dunkelblaue Hautfarbe und weißes bis weißblondes Haar. Auffallendes Merkmal sind ihre Fühler, die vom Vor- oder Hinterkopf ausgehen. Mit ihren Fühlern drücken Andorianer ungewollt Emotionen aus. Bei zum Beispiel Wut legen sich die Fühler flach an den Kopf, bei Trauer gehen sie etwas auseinander und begegnen sie ihrer großen Liebe, richten sich die Fühler senkrecht nach oben (falls die Fühler nicht vollständig nach oben ausgerichtet sind). Als Kinder und Teenager sind Andorianer grünhäutig, dann wechselt ihre Hautfarbe. (TNG: Datas Nachkomme)
@@ -52,36 +47,6 @@
 	Subspezies Aenar Bearbeiten
 	Unter den Andorianern existiert noch eine Subspezies, die Aenar. Lange Zeit ist dieses sehr zurückgezogen und pazifistisch lebende Volk eine reine Legende; nur wenige Andorianer haben je wirklich einen gesehen. Äußerlich gleichen sie den Andorianern. Der einzige Unterschied liegt in ihrer blasseren Hautfarbe, die nur einen sehr hellblauen Schimmer besitzt und fast ins Schneeweiße tendiert. Entgegen den Andorianern sind die Aenar Telepathen, dafür jedoch blind.
 </c:when>
-<c:when test="${ param['planetId'] eq '3' }">
-	<h1>Ihr Heimatplanet Vulkan</h1>
-	<img src="../css/default_thema/images/spezies/planet3.jpg" class="cn_left"/>
-	Ressourcenvorkommen:<br/><br/>
-	<table>
-		<tr><td>Elerium</td><td>1 Tonnen / Hektar</td></tr>
-		<tr><td>Tetrele</td><td>105 Tonnen / Hektar</td></tr>
-		<tr><td>Seltenerdmetalle</td><td>14 Tonnen / Hektar</td></tr>
-		<tr><td>Edelmetalle</td><td>5 Tonnen / Hektar</td></tr>
-		<tr><td>Alkalimetalle</td><td>40 Tonnen / Hektar</td></tr>
-	</table>
-
-	<h1>Spezies: Vulkanier</h1>
-Die humanoide Spezies der Vulkanier stammt vom Planeten Vulkan. Es sind Telepathen, die gelernt haben, ihre Emotionen zu unterdrücken und unter Kontrolle zu halten. Sie folgen der reinen Logik.
-Die vulkanische Physiologie ist gut angepasst an eine lebensfeindliche wüstenartige Umgebung. So besitzen sie auch ein drittes, innenliegendes Augenlid, das sie vor den Strahlen der vulkanischen Sonne schützt. Sie benutzen es nur sehr selten und dann rein instinktiv, ähnlich dem menschlichen Lidschluss-Reflex. (TOS: Spock außer Kontrolle; ENT: Der Anschlag) Vulkanier beginnen erst ab einer Umgebungstemperatur von etwa 350 Kelvin (das entspricht ungefähr 77 Grad Celsius) zu schwitzen und kommen Tage ohne Wasser aus. (VOY: Der Spuk auf Deck Zwölf; ENT: Der Anschlag)
-	<img src="../css/default_thema/images/spezies/spezies3.jpg" class="cn_right"/>
-Sie haben einen durchschnittlichen Puls von 242, wobei ein Herzschlag von 300 Schlägen pro Minute außergewöhnlich hoch ist, ihr Blutdruck ist normalerweise kaum messbar. Bei Vulkaniern liegt das Herz dort, wo bei Menschen die Leber ist (TOS: Implosion in der Spirale, Der erste Krieg; VOY: Tuvoks Flashback).
-
-Vulkanier kommen zwei Wochen ohne Schlaf aus und haben einen sehr anpassungsfähigen Darm, und auch wenn ihnen ihre Ideologie das Verzehren von Fleisch verbietet sind sie dazu in der Lage. (VOY: Die Muse; ENT: In guter Hoffnung) Der Magen ist sehr strapazierfähig, laut Dr. McCoy können Vulkanier sogar Termiten essen. (Star Trek V: Am Rande des Universums)
-
-Vulkanier haben durchschnittlich etwa dreimal soviel Kraft wie ein Mensch und sind auch stärker als die meisten anderen Spezies. Vulkanisches Blut ist grün, da seine Erythrozyten Kupferoxid statt Eisenoxid wie bei den Menschen beinhalten. (TOS: Das Letzte seiner Art, Tödliche Wolken)
-
-Außerdem haben Vulkanier auch in einer weniger dichten Atmosphäre mit weniger Sauerstoff kaum Probleme. Vulkanier haben einen ausgeprägten Geruchssinn, besonders die Frauen. Daher ist ihnen die menschliche Gesellschaft wegen der Geruchsbelästigung eher unangenehm. Sind sie zum Zusammenleben mit Menschen gezwungen nehmen sie deswegen einen Geruchsblocker. Hinzu kommt natürlich die hohe Emotionalität der Menschen. (TOS: Weltraumfieber; Star Trek III: Auf der Suche nach Mr. Spock; VOY: Pon Farr; ENT: Doppeltes Spiel)
-
-Die vulkanische Physiologie reagiert sensibel auf Neutronengradienten.
-
-Ihre Lebenserwartung beträgt rund 200 Jahre.<br/>
-<br/>
-Psyche<br/>
-Vulkanier sind von Natur aus eine sehr impulsive, triebgesteuerte und aggressive Spezies, jedoch werden diese Instinkte heute mit Hilfe von Meditation und strikter mentaler Disziplin unterdrückt. Der vulkanische Verhaltenskodex diktiert das Abschalten jeglicher Emotionen.
-
-</c:when>
 </c:choose>
+
+
