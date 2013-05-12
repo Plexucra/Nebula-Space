@@ -33,6 +33,44 @@ public class Sql
 			map.put("NachrichtService.sendNachricht","insert into nachricht (nutzerIdSender, nutzerIdEmpfaenger, typ, betreff, text, datumGesendet) values (?,?,?,?,?,NOW())");
 			map.put("AllianzService.getAllianzen","select * from allianz");
 			map.put("NutzerService.insertLager","insert into lager (nutzerId, planetId, ress1, ress2, ress3, ress4, ress5) values (?,?,0,0,0,0,0)");
+			map.put("StatistikService.getNutzerhighscore"," " +
+					"select  " +
+					"    id as nutzerId,  " +
+					"    kontostand,  " +
+					"    reputation,  " +
+					"    0 as forschungspunkte,  " +
+					"    t2.rohstoffbesitz, " +
+					"    t3.anzahlGebaeude, " +
+					"    t4.kapazitaetGebaeude, " +
+					"    t5.flottenstaerke," +
+					"	 (kontostand/100)+t2.rohstoffbesitz+(10000*t3.anzahlGebaeude)+(100*t4.kapazitaetGebaeude)+ coalesce( (10*t5.flottenstaerke),0)+(10000*reputation) as highscore " +
+					"from nutzer as t1 " +
+					"join " +
+					"( " +
+					"    select sum(ress1+ress2+ress3+ress4+ress5) as rohstoffbesitz, nutzerId  " +
+					"    from lager group by nutzerId " +
+					") as t2 on (t2.nutzerId = t1.id) " +
+					"join  " +
+					"( " +
+					"    select gebaeude.besitzerNutzerId, count(gebaeude.id) as anzahlGebaeude from gebaeude  " +
+					"    join modell on (modell.id = modellId) " +
+					"    group by gebaeude.besitzerNutzerId " +
+					") as t3 on (t3.besitzerNutzerId= t1.id) " +
+					"join  " +
+					"( " +
+					"    select gebaeude.besitzerNutzerId, sum(modell.kapazitaet) as kapazitaetGebaeude from gebaeude  " +
+					"    join modell on (modell.id = modellId) " +
+					"    group by gebaeude.besitzerNutzerId " +
+					") as t4 on (t4.besitzerNutzerId= t1.id) " +
+					"left outer join  " +
+					"( " +
+					"    select flotte.besitzerNutzerId, sum(schiffsmodell.masse) as flottenstaerke from flotte " +
+					"    join geschwader on (geschwader.flotteId = flotte.id) " +
+					"    join schiffsmodell on (schiffsmodell.id = geschwader.schiffsmodellId) " +
+					"    group by flotte.besitzerNutzerId " +
+					") as t5 on (t5.besitzerNutzerId= t1.id) " +
+					"order by highscore desc" +
+					"");
 		}
 		return map;
 	}

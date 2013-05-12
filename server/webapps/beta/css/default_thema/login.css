@@ -11,17 +11,19 @@
 }
 ._pages_login #headDiv
 {
+	text-align: right;
+	font-weight:bold;
 	border: 1px solid #aaa;
-	padding:25px;
 	background: rgba(255, 255, 255, .1);
 	position: absolute;
-	width: 800px;
-	height: 100px;
-	top: 50px;
+	width: 1200px;
+	height: 120px;
+	top: 35px;
 	left: 50%;
-	margin-left: -400px;
-	background-image: url("images/header02.jpg");
+	margin-left: -575px;
+	background-image: url("images/banner.png");
 	background-repeat: no-repeat;
+	
 }
 .planetInfo
 {

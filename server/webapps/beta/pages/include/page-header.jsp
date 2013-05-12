@@ -22,19 +22,23 @@
 		<div id="headDiv">
 			<table>
 			<tr>
-				<td class="banner">Colony</td>
+<!-- 				<td class="banner">Colony</td> -->
 				<td class="info">
 					<%
-					
 						long timeToNextTick = Math.round((float)(ContextListener.getTicker().getDuration() - (System.currentTimeMillis()-ContextListener.getTicker().getDtLastTick()))/1000f);
 					%>
-
 					<table width="100%">
-						<tr><td>Angemeldet als:</td>
-						<td>
-							<%= NutzerService.getNutzer(session).getAlias() %>
-						</td>
-						<td class="dn_tickInfo" align="right"> - Tick: in <span class="dn_tickTimeInfo"><%= timeToNextTick %> Sek.</span> </td>
+						<tr>
+							<td align="right">Ihr Heimatplanet:</td>
+							<td align="right"><%= s.getNutzer().getHeimatPlanet().getName() %></td>
+						</tr>
+						<tr>
+							<td align="right">Angemeldet als:</td>
+							<td align="right"><%= NutzerService.getNutzer(session).getAlias() %></td>
+						</tr>
+						<tr>
+							<td align="right">Tick in:</td>
+							<td align="right"><span class="dn_tickTimeInfo"><%= timeToNextTick %> Sek.</span></td>
 						</tr>
 					</table>
 					
@@ -47,7 +51,7 @@
 			{
 				if(tTime<=0)
 				{
-					$(".dn_tickTimeInfo").html("-");
+					$(".dn_tickTimeInfo").html("0 Sek.");
 					return;
 				}
 				$(".dn_tickTimeInfo").html(tTime+" Sek.");
@@ -78,16 +82,16 @@
 							<span>Konto: </span>
 							<%= Formater.formatCurrency(NutzerService.getNutzer(session).getKontostand()) %> 
 							<%= Formater.formatDiffCurrency( NutzerService.getNutzer(session).getGewinn() * ((60*60*1000) / ContextListener.getTicker().getDuration()) ) %>
-							<span> / h</span>
+							<span> / h &nbsp;</span>
 						</div>
 						<div class="menuDiv_stage1">
 							<a id="menuPunkt1_pages_nachrichten" href='${up}/pages/nachrichten.jsp'>Nachrichten</a>
 							<a id="menuPunkt1_pages_nebula" href='${up}/pages/nebula.jsp'>Galaxie</a>
 							<a id="menuPunkt1_pages_karte" href='${up}/pages/karte.jsp'>Kolonie</a>
-							<a id="menuPunkt1_pages_forschung" href='${up}/pages/forschung.jsp'>Forschung</a>
 							<a id="menuPunkt1_pages_modules_handel" href='${up}/pages/modules/handel/uebersicht.jsp'>Handel</a>
 							<a id="menuPunkt1_pages_modules_statistik" href='${up}/pages/modules/statistik/nutzer.jsp'>Statistik</a>
-							<a id="menuPunkt1_pages_einstellungen" href='${up}/pages/einstellungen.jsp'>Einstellungen</a>
+							<a id="menuPunkt1_pages_forschung" href='${up}/pages/forschung.jsp'>Forschung</a>
+<%-- 							<a id="menuPunkt1_pages_einstellungen" href='${up}/pages/einstellungen.jsp'>Einstellungen</a> --%>
 						</div>
 						<div class="menuDiv_stage2" ref="menuPunkt1_pages_karte">
 							<a id="menuPunkt2_pages_karte" href='${up}/pages/karte.jsp' >Schematischer Stadtplan</a><span> | </span>

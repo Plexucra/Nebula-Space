@@ -104,7 +104,7 @@ div.ui-state-error
 
 span.cn_positiv
 {
-	color: #afa;
+	color: #fff;
 }
 span.cn_negativ
 {
@@ -119,10 +119,7 @@ span.cn_negativ
 	text-shadow: 0 0 0.5em #fff;
 	
 }
-.dn_tickInfo, .dn_tickTimeInfo
-{
-	color: black;
-}
+
 #menuDiv
 {
 /* 	text-shadow: 0 0 0.5em #0af; */
@@ -210,11 +207,11 @@ span.cn_negativ
 {
 /* 	background: rgba(255, 255, 255, .1); */
 	position: absolute;
-	width: 800px;
+	width: 1202px;
 	height: 100px;
-	top: 102px;
+	top: 105px;
 	left: 50%;
-	margin-left: -400px;
+	margin-left: -600px;
 }
 #menuDiv > table
 {
@@ -239,20 +236,31 @@ span.cn_negativ
 	border: 1px solid #aaa;
 	background: rgba(255, 255, 255, .1);
 	position: absolute;
-	width: 800px;
-	height: 100px;
-	top: 0px;
+	width: 1200px;
+	height: 120px;
+	top: 10px;
 	left: 50%;
-	margin-left: -400px;
-	background-image: url("images/header02.jpg");
+	margin-left: -600px;
+	background-image: url("images/banner.png");
 	background-repeat: no-repeat;
+}
+table.cn_matrix
+{
+	border-collapse: collapse;
+}
+table.cn_matrix td, table.cn_matrix th
+{
+	padding-right:15px;
 }
 #headDiv > table
 {
-	text-shadow: 0.1em 0.1em 0.1em #000;
+/* 	text-shadow: 0.1em 0.1em 0.1em #000; */
 	color:#fff;
-	margin-top:70px;
+	margin-top:10px;
 	margin-left:0px;
+	right: 10px;
+	position:absolute;
+	font-weight: normal;
 }
 /* .dn_folder */
 /* { */
