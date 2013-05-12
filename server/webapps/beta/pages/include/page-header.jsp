@@ -10,6 +10,7 @@
 	<meta charset="utf-8">
 	<title>Nebula-Space.de</title>
 	<link href="${up}/css/default_thema/colony.css" rel="stylesheet">
+	<script src="${up}/js/lib.js"></script>
 	<script src="${up}/js/jquery-1.9.1.js"></script>
 	<script src="${up}/js/jquery-ui-1.10.1.custom.js"></script>
 	<script>

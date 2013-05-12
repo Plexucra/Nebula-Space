@@ -35,7 +35,23 @@ public class FlottenService
 	
 	public static void updateFlottenlagerKapazitaet(int flotteId, int neueKapazitaet, Connection c)
 	{
-		
+		try
+		{
+			Flotte f = getFlotte(flotteId, c);
+			int ck = 0;
+			for(int i=1; i<=5; i++)
+				ck += f.getRess(i);
+			if(ck >= neueKapazitaet)
+				return;
+			float multi = (float)((double)neueKapazitaet / (double)ck);
+			for(int i=1; i<=5; i++)
+				f.setRess(i, (int) Math.floor( (double)f.getRess(i)*multi ));
+			DbEngine.exec(c, "update flotte set ress1=?, ress2=?, ress3=?, ress4=?, ress5=? where id = ?", f.getRess1(), f.getRess2(), f.getRess3(), f.getRess4(), f.getRess5(), flotteId);
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	
 	public static void transferFlottenlager(Nutzer nutzer, int planetId, int flotteId, int ress1, int ress2, int ress3, int ress4, int ress5, Connection c) throws Exception

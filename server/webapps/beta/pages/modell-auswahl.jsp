@@ -6,6 +6,10 @@
 <%@page import="org.colony.data.Modell"%>
 <%@ include file="include/page-header.jsp" %>
 <%@page import="org.colony.lib.ContextListener"%>
+
+
+
+
 	<style>
 	.dn_modellAuswahlTyp td
 	{
@@ -36,7 +40,7 @@
 				if(lastTyp!=null)
 					out.println("</tr></table></div>");
 				if(m.getProdukt()!=null)
-					out.println("<div class='dn_modellAuswahlTyp'><h3>"+m.getProdukt().getBezeichnung()+" ("+m.getTyp().getBezeichnung()+")</h3><table><tr>");
+					out.println("<div class='dn_modellAuswahlTyp'><h3>"+m.getProdukt().getBezeichnung()+" <span class='cn_label'>("+m.getTyp().getBezeichnung()+")</span></h3><table><tr>");
 				else
 					out.println("<div class='dn_modellAuswahlTyp'><h3>"+m.getTyp().getBezeichnung()+"</h3><table><tr>");
 					
@@ -53,15 +57,16 @@
 			%>
 <%-- 				(${t_m.stockwerke} x ${t_m.breite} x ${t_m.tiefe})  --%>
 				<br/>
-				<a href="karte.jsp?selModellId=${t_m.id}"> Auswählen</a><br/>
+				<a class="cn_forward" href="javascript:;" onclick="showAjaxDialog('${up}/ajax/modellInfoDialog.jsp?modellId=<%= m.getId() %>')">Mehr Infos</a><br/>
+				<a class="cn_forward" href="karte.jsp?selModellId=${t_m.id}"> Auswählen</a><br/>
 			<%
 // 			out.println(" <a href='karte.jsp?selModellId="+m.getId()+"' data_id='"+m.getId()+"'> <br/>Auswählen</a> ("+m.getStockwerke()+" x "+m.getBreite()+" x "+m.getTiefe()+") <br/>");
 			out.println("<br/>");
-			if(m.getProdukt()!=null)
-			{
-				out.println(""+m.getProdukt().getBezeichnung()+"<br/>");
-			}
-			else out.println("");
+// 			if(m.getProdukt()!=null)
+// 			{
+// 				out.println(""+m.getProdukt().getBezeichnung()+"<br/>");
+// 			}
+// 			else out.println("");
 			out.println("</td>");
 
 		}

@@ -19,6 +19,12 @@ a, .ui-widget-content a
 	color:#0bf;
 	text-decoration:none;
 }
+#mainDiv a.cn_forward
+{
+	background-image: url("images/link-icons/forward.png");
+	background-repeat: no-repeat;
+	padding-left:17px;
+}
 
 body, td, th
 {
